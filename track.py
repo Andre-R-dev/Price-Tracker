@@ -427,3 +427,4 @@ def send_email(email, password, targets, title, price, url):  # tem de ser outlo
 
 
 search_product_list()
+# TESTE
