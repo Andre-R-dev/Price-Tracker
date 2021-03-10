@@ -3,8 +3,9 @@ from datetime import datetime
 from email.mime.text import MIMEText
 from glob import glob
 from time import sleep
-
+import tkinter
 import pandas as pd
+import numpy as np
 import requests
 from bs4 import BeautifulSoup
 
@@ -13,6 +14,52 @@ HEADERS = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36",
     "Accept-Language": "en-US, en;q=0.5",
 }
+### LER/CRIAR FICHEIRO TRACK###
+try:
+    """Lê o csv com o track das coisas que queremos"""
+    prod_tracker = pd.read_csv("TRACKER_TEST2.csv", sep=";")
+    prod_tracker_URLS = prod_tracker.url  # coluna url
+    tracker_log = pd.DataFrame()
+except:
+    """Cria o csv inicial para fazer Track do que queremos"""
+    head_excel = ["url", "codigo", "comprar abaixo"]
+    head = pd.DataFrame(columns=head_excel)
+    head.to_csv("TRACKER_TEST2.csv", sep=";", index=0)
+    """Lê o csv com o track das coisas que queremos"""
+    prod_tracker = pd.read_csv("TRACKER_TEST2.csv", sep=";")
+    prod_tracker_URLS = prod_tracker.url  # coluna url
+    tracker_log = pd.DataFrame()
+
+now = datetime.now().strftime("%Y-%m-%d %Hh%Mm")
+
+
+class App:
+    def __init__(
+        self, window, window_title,
+    ):  # por defeito a video source seria 0; #a funcao init é sempre executada no inicio
+        self.window = window  # "tkinter.Tk()"
+        self.window.title(window_title)
+        # window.attributes('-fullscreen',True) # maximiza a janela
+
+        # Button that lets the user close the application
+        self.btn_close = tkinter.Button(
+            window,
+            text="Fechar Aplicação",
+            width=25,
+            height=2,
+            command=self.close_window,
+        )
+        # self.btn_close.place(relx=0.8,rely=0.8, anchor='sw')
+        self.btn_close.pack(anchor=tkinter.CENTER, expand=True, side="right")
+
+        # After it is called once, the update method will be automatically called every delay milliseconds
+        # self.delay = 15
+        # self.update() # corre a função update
+        self.window.mainloop()  # corre a janela em loop, todos os botões criados estão sempre prontos para serem carregados
+
+    # Função para fechar as janelas quando o botão é pressionado
+    def close_window(self):
+        self.window.destroy()
 
 
 def search_product_list(interval_count=1, interval_hours=1):
@@ -38,15 +85,15 @@ def search_product_list(interval_count=1, interval_hours=1):
     New .xlsx file with previous search history and results from current search
 
     """
-    prod_tracker = pd.read_csv("trackers/TRACKER_PRODUCTS.csv", sep=";")
-    prod_tracker_URLS = prod_tracker.url
-    tracker_log = pd.DataFrame()
-    now = datetime.now().strftime("%Y-%m-%d %Hh%Mm")
+    # prod_tracker = pd.read_csv("trackers/TRACKER_PRODUCTS.csv", sep=";")
+    # prod_tracker_URLS = prod_tracker.url
+    # tracker_log = pd.DataFrame()
+    # now = datetime.now().strftime("%Y-%m-%d %Hh%Mm")
     interval = 0  # counter reset
 
     while interval < interval_count:
 
-        for x, url in enumerate(prod_tracker_URLS):
+        for count, url in enumerate(prod_tracker_URLS):
             print(url)
             page = requests.get(url, headers=HEADERS)
             # cria um objeto que contem a info da url mas de forma organizada != do page
@@ -327,43 +374,43 @@ def search_product_list(interval_count=1, interval_hours=1):
                     {
                         "date": now.replace("h", ":").replace("m", ""),
                         # this code comes from the TRACKER_PRODUCTS file
-                        "code": prod_tracker.code[x],
+                        "code": prod_tracker.code[count],
                         "url": url,
                         "title": title,
                         # this price comes from the TRACKER_PRODUCTS file ###ATENCAO####
-                        "buy_below": prod_tracker.buy_below[x],
+                        "buy_below": prod_tracker.buy_below[count],
                         "price": price,
                         "stock": stock,
                         "review_score": review_score,
                         "review_count": review_count,
                     },
-                    index=[x],
+                    index=[count],
                 )
             else:
                 log = pd.DataFrame(
                     {
                         "date": now.replace("h", ":").replace("m", ""),
                         # this code comes from the TRACKER_PRODUCTS file
-                        "code": prod_tracker.code[x],
+                        "code": prod_tracker.code[count],
                         "url": url,
                         "title": title,
                         # this price comes from the TRACKER_PRODUCTS file ###ATENCAO####
-                        "buy_below": prod_tracker.buy_below[x],
+                        "buy_below": prod_tracker.buy_below[count],
                         "price": price,
                         "stock": stock,
                     },
-                    index=[x],
+                    index=[count],
                 )
             ############################################################################################
             try:
                 # This is where you can integrate an email alert!
-                if price < prod_tracker.buy_below[x] and (
+                if price < prod_tracker.buy_below[count] and (
                     stock == "Disponivel"
                     or stock == "Disponivel, mas com poucas unidades"
                 ):
                     print(
                         "************************ ALERT! Buy the "
-                        + prod_tracker.code[x]
+                        + prod_tracker.code[count]
                         + " ************************"
                     )
                     send_email(
@@ -379,7 +426,7 @@ def search_product_list(interval_count=1, interval_hours=1):
                 # sometimes we don't get any price, so there will be an error in the if condition above
                 pass
             tracker_log = tracker_log.append(log)
-            # print('appended '+ prod_tracker.code[x] +'\n' + title + '\n' + stock + '\n\n')
+            # print('appended '+ prod_tracker.code[count] +'\n' + title + '\n' + stock + '\n\n')
             print(title + "\n" + stock + "\n\n")
             sleep(5)
 
@@ -426,4 +473,7 @@ def send_email(email, password, targets, title, price, url):  # tem de ser outlo
     server.quit()
 
 
-search_product_list()
+# search_product_list()
+
+# Create a window and pass it to the Application object
+App(tkinter.Tk(), "Tracking")
