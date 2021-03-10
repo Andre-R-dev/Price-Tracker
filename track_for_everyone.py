@@ -39,27 +39,43 @@ class App:
     ):  # por defeito a video source seria 0; #a funcao init é sempre executada no inicio
         self.window = window  # "tkinter.Tk()"
         self.window.title(window_title)
+        self.window.geometry("500x500")
         # window.attributes('-fullscreen',True) # maximiza a janela
 
-        # Button that lets the user close the application
+        """Botão que fecha a aplicação"""
         self.btn_close = tkinter.Button(
             window,
             text="Fechar Aplicação",
-            width=25,
+            width=15,
             height=2,
             command=self.close_window,
         )
-        # self.btn_close.place(relx=0.8,rely=0.8, anchor='sw')
-        self.btn_close.pack(anchor=tkinter.CENTER, expand=True, side="right")
+        self.btn_close.place(x=385, y=0)
 
-        # After it is called once, the update method will be automatically called every delay milliseconds
-        # self.delay = 15
-        # self.update() # corre a função update
+        """Cria as labels iniciais"""
+        self.Label_Inicial()
+
         self.window.mainloop()  # corre a janela em loop, todos os botões criados estão sempre prontos para serem carregados
 
     # Função para fechar as janelas quando o botão é pressionado
     def close_window(self):
         self.window.destroy()
+
+    def Label_Inicial(self):
+        # Entrada de texto relativamente ao que vamos fazer track
+        self.leitor_track_text = tkinter.Label(
+            self.window,
+            text="Url do item",
+            fg="black",
+            font=("Arial", 10),
+            bg="white",
+            width=10,
+            borderwidth=2,
+            relief="groove",
+        )
+        self.leitor_track_text.place(x=210, y=100)
+        self.leitor_track = tkinter.Entry(self.window)
+        self.leitor_track.place(x=190, y=125)
 
 
 def search_product_list(interval_count=1, interval_hours=1):

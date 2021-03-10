@@ -367,12 +367,7 @@ def search_product_list(interval_count=1, interval_hours=1):
                         + " ************************"
                     )
                     send_email(
-                        "Plynkss@hotmail.com",
-                        "Adral_2020_2021",
-                        ["andre.rodrigues@adral.pt", "andresrodrigues@ua.pt"],
-                        title,
-                        price,
-                        url,
+                        "teuemail", "tuapass", ["email", "email"], title, price, url,
                     )
 
             except:
