@@ -400,9 +400,7 @@ def send_email(email, password, targets, title, price, url):  # tem de ser outlo
     server.starttls()
 
     sender = email
-    # targets = ["andre.rodrigues@adral.pt","andresrodrigues@ua.pt"]
 
-    # server = smtplib.SMTP_SSL('host', port)
     server.ehlo()
     server.login(email, password)
     sleep(5)

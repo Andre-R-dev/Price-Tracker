@@ -4,6 +4,7 @@ from email.mime.text import MIMEText
 from glob import glob
 from time import sleep
 import tkinter
+from tkinter import messagebox
 import pandas as pd
 import numpy as np
 import requests
@@ -18,7 +19,7 @@ HEADERS = {
 try:
     """Lê o csv com o track das coisas que queremos"""
     prod_tracker = pd.read_csv("TRACKER_TEST2.csv", sep=";")
-    prod_tracker_URLS = prod_tracker.url  # coluna url
+    search_tracker_log = pd.DataFrame()
     tracker_log = pd.DataFrame()
 except:
     """Cria o csv inicial para fazer Track do que queremos"""
@@ -27,30 +28,48 @@ except:
     head.to_csv("TRACKER_TEST2.csv", sep=";", index=0)
     """Lê o csv com o track das coisas que queremos"""
     prod_tracker = pd.read_csv("TRACKER_TEST2.csv", sep=";")
-    prod_tracker_URLS = prod_tracker.url  # coluna url
+    search_tracker_log = pd.DataFrame()
     tracker_log = pd.DataFrame()
 
-now = datetime.now().strftime("%Y-%m-%d %Hh%Mm")
+now = datetime.now().strftime("%Y-%m-%d %Hh%Mm")  # DATA E HORA
 
 
 class App:
     def __init__(
-        self, window, window_title,
+        self, window, window_title, prod_tracker, search_tracker_log, tracker_log
     ):  # por defeito a video source seria 0; #a funcao init é sempre executada no inicio
         self.window = window  # "tkinter.Tk()"
         self.window.title(window_title)
         self.window.geometry("500x500")
         # window.attributes('-fullscreen',True) # maximiza a janela
 
+        self.prod_tracker = prod_tracker
+        self.search_tracker_log = search_tracker_log
+        self.tracker_log = tracker_log
+
+        """BOTÕES"""
+        #############################################
         """Botão que fecha a aplicação"""
         self.btn_close = tkinter.Button(
             window,
             text="Fechar Aplicação",
             width=15,
-            height=2,
+            height=1,
             command=self.close_window,
         )
         self.btn_close.place(x=385, y=0)
+
+        """Botão que adiciona um link ao csv"""
+        self.btn_append_track = tkinter.Button(
+            window,
+            text="Adicionar Dados à Busca",
+            width=20,
+            height=1,
+            command=self.Append_CSV,
+        )
+        self.btn_append_track.place(x=210, y=70)
+
+        ###############################################
 
         """Cria as labels iniciais"""
         self.Label_Inicial()
@@ -74,8 +93,53 @@ class App:
             relief="groove",
         )
         self.leitor_track_text.place(x=210, y=100)
+
         self.leitor_track = tkinter.Entry(self.window)
         self.leitor_track.place(x=190, y=125)
+
+    """Funcao para adicionar novas urls ao csv tracker"""
+
+    def Append_CSV(self):
+        url_track_append = str(self.leitor_track.get())
+        """Ver se a url é das lojas possíveis de analisar"""
+        if ((url_track_append != "") and (
+            (
+                "pcdiga"
+                or "worten"
+                or "amazon"
+                or "mediamarkt"
+                or "chip7"
+                or "chiptec"
+                or "globaldata"
+            )
+            in url_track_append
+        )) and :
+            self.tracker_log = self.tracker_log.append(
+                {"url": url_track_append}
+            )  # alocar primeiro ao dataframe
+            csv_prod_tracker = prod_tracker.url.append(self.tracker_log, sort=False)
+            # save the  file with the information
+            csv_prod_tracker.to_csv("TRACKER_TEST2.csv", sep=";", index=False)
+
+        # after the run, checks last search history record, and appends this run results to it, saving a new file
+
+        # {
+        # "date": now.replace("h", ":").replace("m", ""),
+
+        # "code": prod_tracker.code[count],
+        # "url": url,
+        # "title": title,
+        # "buy_below": prod_tracker.buy_below[count],
+        # "price": price,
+        # "stock": stock,
+        # },
+
+
+# path to last file in the folde prod_tracker_URLS
+# tracker_log = tracker_log.append(log)
+# last_search = glob("search_history/*.xlsx")[-1]
+# search_hist = pd.read_excel(last_search)
+# final_df = prod_tracker.url.append(tracker_log, sort=False)
 
 
 def search_product_list(interval_count=1, interval_hours=1):
@@ -429,14 +493,6 @@ def search_product_list(interval_count=1, interval_hours=1):
                         + prod_tracker.code[count]
                         + " ************************"
                     )
-                    send_email(
-                        "Plynkss@hotmail.com",
-                        "Adral_2020_2021",
-                        ["andre.rodrigues@adral.pt", "andresrodrigues@ua.pt"],
-                        title,
-                        price,
-                        url,
-                    )
 
             except:
                 # sometimes we don't get any price, so there will be an error in the if condition above
@@ -462,34 +518,8 @@ def search_product_list(interval_count=1, interval_hours=1):
     print("end of search")
 
 
-def send_email(email, password, targets, title, price, url):  # tem de ser outlook
-    print("almost email.....")
-    server = smtplib.SMTP(host="smtp.outlook.com", port=587)
-    server.starttls()
-
-    sender = email
-    # targets = ["andre.rodrigues@adral.pt","andresrodrigues@ua.pt"]
-
-    # server = smtplib.SMTP_SSL('host', port)
-    server.ehlo()
-    server.login(email, password)
-    sleep(5)
-
-    msg = MIMEText(
-        "O produto {} está um preço bombástico de {} e tem stock URL {}".format(
-            title, price, url
-        )
-    )
-    msg["Subject"] = title
-    msg["From"] = sender
-    msg["To"] = ", ".join(targets)
-
-    server.sendmail(sender, targets, msg.as_string())
-    print("sent email.....")
-    server.quit()
-
-
 # search_product_list()
 
 # Create a window and pass it to the Application object
-App(tkinter.Tk(), "Tracking")
+App(tkinter.Tk(), "Tracking", prod_tracker, search_tracker_log, tracker_log)
+
