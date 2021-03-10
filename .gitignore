@@ -1,5 +1,6 @@
-TRACKER_TEST
+TRACKER_TEST.csv
+TRACKER_TEST2.csv
 teste.py
 README.md
 .vscode
-track_compass
+track_compass.py
