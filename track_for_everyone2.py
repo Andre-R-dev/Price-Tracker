@@ -23,7 +23,7 @@ try:
     tracker_log = pd.DataFrame()
 except:
     """Cria o excel inicial para fazer Track do que queremos"""
-    head_excel = ["url", "codigo", "comprar abaixo"]
+    head_excel = ["url", "codigo", "comprar_abaixo"]
     head = pd.DataFrame(columns=head_excel)
     head.to_excel("TRACKER_TEST2.xlsx", index=0)
     """Lê o excel com o track das coisas que queremos"""
@@ -31,7 +31,7 @@ except:
     search_tracker_log = pd.DataFrame()
     tracker_log = pd.DataFrame()
 
-now = datetime.now().strftime("%Y-%m-%d %Hh%Mm")  # DATA E HORA
+# now = datetime.now().strftime("%Y-%m-%d %Hh%Mm")  # DATA E HORA
 
 
 class App:
@@ -74,7 +74,7 @@ class App:
         self.btn_append_track = tkinter.Button(
             window, text="Run", width=20, height=1, command=self.Run_Prg,
         )
-        self.btn_append_track.place(x=210, y=300)
+        self.btn_append_track.place(x=10, y=0)
 
         ###############################################
 
@@ -133,10 +133,59 @@ class App:
             borderwidth=2,
             relief="groove",
         )
-        self.leitor_buybellow_text.place(x=110, y=10)
+        self.leitor_buybellow_text.place(x=110, y=30)
 
         self.leitor_buybellow = tkinter.Entry(self.window)
-        self.leitor_buybellow.place(x=90, y=35)
+        self.leitor_buybellow.place(x=90, y=55)
+
+        # Entrada de texto relativamente ao intervalo entre pesquisas
+        #  quantos dados a pessoa quer ter sobre cada objeto
+        self.leitor_t_ciclo_text = tkinter.Label(
+            self.window,
+            text="Intervalo de tempo entre pesquisas",
+            fg="black",
+            font=("Arial", 10),
+            bg="white",
+            width=40,
+            borderwidth=2,
+            relief="groove",
+        )
+        self.leitor_t_ciclo_text.place(x=110, y=190)
+
+        self.leitor_t_ciclo = tkinter.Entry(self.window)
+        self.leitor_t_ciclo.place(x=90, y=220)
+
+        # Entrada de texto relativamente ao tempo que o programa vai correr
+        self.leitor_t_total_text = tkinter.Label(
+            self.window,
+            text="Tempo que o programa corre em minutos",
+            fg="black",
+            font=("Arial", 10),
+            bg="white",
+            width=40,
+            borderwidth=2,
+            relief="groove",
+        )
+        self.leitor_t_total_text.place(x=200, y=330)
+
+        self.leitor_t_total = tkinter.Entry(self.window)
+        self.leitor_t_total.place(x=200, y=350)
+
+        # Entrada de texto relativamente ao email para onde vai receber o aviso
+        self.leitor_mail_text = tkinter.Label(
+            self.window,
+            text="E-mail para o alerta",
+            fg="black",
+            font=("Arial", 10),
+            bg="white",
+            width=20,
+            borderwidth=2,
+            relief="groove",
+        )
+        self.leitor_mail_text.place(x=310, y=430)
+
+        self.leitor_mail = tkinter.Entry(self.window)
+        self.leitor_mail.place(x=300, y=450)
 
     """Funcao para adicionar novas urls ao excel tracker"""
 
@@ -146,29 +195,24 @@ class App:
         buybellow_track_append = str(self.leitor_buybellow.get())
         """Ver se a url é das lojas possíveis de analisar"""
         if (
-            (
-                (url_track_append != "")
-                and (
-                    (
-                        "pcdiga"
-                        or "worten"
-                        or "amazon"
-                        or "mediamarkt"
-                        or "chip7"
-                        or "chiptec"
-                        or "globaldata"
-                    )
-                    in url_track_append
-                )
+            url_track_append != ""
+            and (
+                ("pcdiga" in url_track_append)
+                or ("worten" in url_track_append)
+                or ("amazon" in url_track_append)
+                or ("mediamarkt" in url_track_append)
+                or ("chip7" in url_track_append)
+                or ("chiptec" in url_track_append)
+                or ("globaldata" in url_track_append)
             )
-            and (code_track_append != "")
-            and (buybellow_track_append.isnumeric)
+            and code_track_append != ""
+            and buybellow_track_append.isnumeric
         ):
             log_track = pd.DataFrame(
                 {
                     "url": url_track_append,
                     "codigo": code_track_append,
-                    "comprar abaixo": buybellow_track_append,
+                    "comprar_abaixo": buybellow_track_append,
                 },
                 index=[self.i_track],
             )  # alocar primeiro ao dataframe
@@ -177,183 +221,192 @@ class App:
 
             self.i_track += 1
 
+    """Funcao que corre o programa e faz append da informação para o ficheiro de tracking"""
+
     def Run_Prg(self):
-        self.prod_tracker = self.prod_tracker.append(
-            self.tracker_log
-        )  # prod_tracker é o read_excel
-        # save the  file with the information
-        self.prod_tracker.to_excel("TRACKER_TEST2.xlsx", index=False)
+        try:
+            if self.i_track != 0:
+                """Colocar os dados adicionados de tracking"""
+                self.prod_tracker = self.prod_tracker.append(
+                    self.tracker_log
+                )  # prod_tracker é o read_excel
+                # save the  file with the information
+                self.prod_tracker.to_excel("TRACKER_TEST2.xlsx", index=False)
+                # self.prod_tracker = pd.read_excel("TRACKER_TEST2.xlsx")
+        except:
+            pass
 
+        """Definir tempo programa, tempo de ciclo e email"""
+        t_int = str(self.leitor_t_ciclo.get())
+        if (
+            t_int.isdecimal and t_int != "" and int(t_int) > 5
+        ):  # tem de ter um numero superior a 5s entre ciclos
+            t_entre_intervalos = int(t_int) - 5
+        else:
+            messagebox.showinfo(
+                "Informação",
+                "O tempo entre procura deve ser um número inteiro e superior a 5 segundos",
+            )
+        t_tot = str(self.leitor_t_total.get())
+        if t_tot.isdecimal and t_tot != "":
+            t_tot = (int(t_tot) * 3600) / 60
+            n_intervalos = int(t_tot) / (
+                t_entre_intervalos  # + (5 * len(self.prod_tracker.url))
+            )
+        else:
+            messagebox.showinfo(
+                "Informação",
+                "O tempo de execução do programa dever ser colocado em minutos\
+                     e deve ser um número inteiro",
+            )
+        l_mail = str(self.leitor_mail.get())
+        if l_mail != "" and (
+            ("@hotmail" in l_mail)
+            or ("@gmail.com" in l_mail)
+            or ("@outlook" in l_mail)
+            or ("@adral.pt" in l_mail)
+            or ("@ua.pt" in l_mail)
+        ):
+            lista_mail = [l_mail]
+        else:
+            messagebox.showinfo(
+                "Informação", "Insira um email válido",
+            )
 
-# log = pd.DataFrame(
-#     {
-#         "date": now.replace("h", ":").replace("m", ""),
-#         # this code comes from the TRACKER_PRODUCTS file
-#         "code": prod_tracker.code[x],
-#         "url": url,
-#         "title": title,
-#         # this price comes from the TRACKER_PRODUCTS file ###ATENCAO####
-#         "buy_below": prod_tracker.buy_below[x],
-#         "price": price,
-#         "stock": stock,
-#         "review_score": review_score,
-#         "review_count": review_count,
-#     },
-#     index=[x],
-# )
-# tracker_log = tracker_log.append(log)
-# path to last file in the folde prod_tracker_URLS
-#  last_search = glob("search_history/*.xlsx")[-1]
-#  search_hist = pd.read_excel(last_search)
-#  final_df = search_hist.append(tracker_log, sort=False)
-#  # save the new file with the information, now - data
-#  final_df.to_excel("search_history/SEARCH_HISTORY_{}.xlsx".format(now), index=False)
+        lista_mail = [
+            "andre.rodrigues@adral.pt",
+            "andresrodrigues@ua.pt",
+        ]  ####ATENCAOOOO####################
 
+        print(n_intervalos)
+        print(t_entre_intervalos)
+        self.search_product_list(
+            n_intervalos, t_entre_intervalos, lista_mail
+        )  # t_intervalos nunca é menor que 5s
 
-def search_product_list(interval_count=1, interval_hours=1):
-    """
-    This function lods a csv file named TRACKER_PRODUCTS.csv, with headers: [url, code, buy_below]
-    It looks for the file under in ./trackers
+    def search_product_list(self, interval_count, interval_seconds, lista_mail):
+        """
+        It also requires a file called SEARCH_HISTORY.xslx under the folder ./search_history to start saving the results.
+        An empty file can be used on the first time using the script.
 
-    It also requires a file called SEARCH_HISTORY.xslx under the folder ./search_history to start saving the results.
-    An empty file can be used on the first time using the script.
+        Both the old and the new results are then saved in a new file named SEARCH_HISTORY_{datetime}.xlsx
+        This is the file the script will use to get the history next time it runs.
 
-    Both the old and the new results are then saved in a new file named SEARCH_HISTORY_{datetime}.xlsx
-    This is the file the script will use to get the history next time it runs.
+        Parameters
+        ----------
+        interval_count : TYPE, optional
+            DESCRIPTION. The default is 1. The number of iterations you want the script to run a search on the full list.
+        interval_hours : TYPE, optional
+            DESCRIPTION. The default is 6.
 
-    Parameters
-    ----------
-    interval_count : TYPE, optional
-        DESCRIPTION. The default is 1. The number of iterations you want the script to run a search on the full list.
-    interval_hours : TYPE, optional
-        DESCRIPTION. The default is 6.
+        Returns
+        -------
+        New .xlsx file with previous search history and results from current search
 
-    Returns
-    -------
-    New .xlsx file with previous search history and results from current search
+        """
+        interval = 0  # counter reset
 
-    """
-    # prod_tracker = pd.read_csv("trackers/TRACKER_PRODUCTS.csv", sep=";")
-    # prod_tracker_URLS = prod_tracker.url
-    # tracker_log = pd.DataFrame()
-    # now = datetime.now().strftime("%Y-%m-%d %Hh%Mm")
-    interval = 0  # counter reset
+        while interval < interval_count:
 
-    while interval < interval_count:
+            for count, url in enumerate(self.prod_tracker.url):
+                now = datetime.now().strftime("%Y-%m-%d %Hh%Mm")  # DATA E HORA
+                print(url)
+                page = requests.get(url, headers=HEADERS)
+                # cria um objeto que contem a info da url mas de forma organizada != do page
+                soup = BeautifulSoup(page.content, features="lxml")
 
-        for count, url in enumerate(prod_tracker_URLS):
-            print(url)
-            page = requests.get(url, headers=HEADERS)
-            # cria um objeto que contem a info da url mas de forma organizada != do page
-            soup = BeautifulSoup(page.content, features="lxml")
+                ##################DIFERENTES LEITURAS DOS SITES###########################################
+                if "pcdiga" in url:
+                    # product title
+                    title = soup.select(".page-title")[0].get_text().strip()
+                    # print(title)
+                    # to prevent script from crashing when there isn't a price for the product
+                    try:
+                        price = (
+                            soup.select(".price")[0]
+                            .get_text()
+                            .replace(".", "")
+                            .replace("€", "")
+                            .replace(",", ".")
+                            .split()
+                        )
+                        if len(price) > 1:
+                            price = price[0] + price[1]
+                        else:
+                            price = price[0]
+                        # print(price)
+                    except:
+                        price = ""
 
-            ##################DIFERENTES LEITURAS DOS SITES###########################################
-            if "pcdiga" in url:
-                # product title
-                title = soup.select(".page-title")[0].get_text().strip()
-                # print(title)
-                # to prevent script from crashing when there isn't a price for the product
-                try:
-                    price = (
-                        soup.select(".price")[0]
-                        .get_text()
-                        .replace(".", "")
-                        .replace("€", "")
-                        .replace(",", ".")
-                        .split()
-                    )
-                    if len(price) > 1:
-                        price = price[0] + price[1]
-                    else:
-                        price = price[0]
-                    # print(price)
-                except:
-                    price = ""
+                    # checking if there is "Out of stock"
+                    try:
+                        soup.select(".skrey_estimate_date_wrapper.unavailable")[
+                            0
+                        ].get_text().strip()
+                        stock = "Sem Stock"
+                        # print(stock)
+                    except:
+                        stock = "Disponivel"
+                        # print(stock)
+                elif "worten" in url:
+                    title = soup.select(".w-product__name")[0].get_text().strip()
+                    # print(title)
+                    # to prevent script from crashing when there isn't a price for the product
+                    try:
+                        price = (
+                            soup.select(".w-product__price")[0]
+                            .get_text()
+                            .replace(".", "")
+                            .replace("€", "")
+                            .replace(",", ".")
+                            .split()
+                        )
+                        if len(price) > 1:
+                            price = price[0] + price[1]
+                        else:
+                            price = price[0]
+                        # print(price)
+                    except:
+                        price = ""
+                    # checking if there is "Out of stock"
+                    try:
+                        soup.select(".w-product__unavailability-title")[
+                            0
+                        ].get_text().strip()
+                        stock = "Sem Stock"
+                        # print(stock)
+                    except:
+                        stock = "Disponivel"
+                        # print(stock)
+                elif "amazon" in url:
+                    # product title
+                    title = soup.find(id="productTitle").get_text().strip()
 
-                # checking if there is "Out of stock"
-                try:
-                    soup.select(".skrey_estimate_date_wrapper.unavailable")[
-                        0
-                    ].get_text().strip()
-                    stock = "Sem Stock"
-                    # print(stock)
-                except:
-                    stock = "Disponivel"
-                    # print(stock)
-            elif "worten" in url:
-                title = soup.select(".w-product__name")[0].get_text().strip()
-                # print(title)
-                # to prevent script from crashing when there isn't a price for the product
-                try:
-                    price = (
-                        soup.select(".w-product__price")[0]
-                        .get_text()
-                        .replace(".", "")
-                        .replace("€", "")
-                        .replace(",", ".")
-                        .split()
-                    )
-                    if len(price) > 1:
-                        price = price[0] + price[1]
-                    else:
-                        price = price[0]
-                    # print(price)
-                except:
-                    price = ""
-                # checking if there is "Out of stock"
-                try:
-                    soup.select(".w-product__unavailability-title")[
-                        0
-                    ].get_text().strip()
-                    stock = "Sem Stock"
-                    # print(stock)
-                except:
-                    stock = "Disponivel"
-                    # print(stock)
-            elif "amazon" in url:
-                # product title
-                title = soup.find(id="productTitle").get_text().strip()
-
-                # to prevent script from crashing when there isn't a price for the product
-                try:
-                    price = float(
-                        soup.find(id="priceblock_ourprice")
-                        .get_text()
-                        .replace(".", "")
-                        .replace("€", "")
-                        .replace(",", ".")
-                        .strip()
-                    )
-                except:
-                    # this part gets the price in dollars from amazon.com store
+                    # to prevent script from crashing when there isn't a price for the product
                     try:
                         price = float(
-                            soup.find(id="priceblock_saleprice")
+                            soup.find(id="priceblock_ourprice")
                             .get_text()
-                            .replace("$", "")
-                            .replace(",", "")
+                            .replace(".", "")
+                            .replace("€", "")
+                            .replace(",", ".")
                             .strip()
                         )
                     except:
-                        price = ""
-                try:
-                    review_score = float(
-                        soup.select('i[class*="a-icon a-icon-star a-star-"]')[0]
-                        .get_text()
-                        .split(" ")[0]
-                        .replace(",", ".")
-                    )
-                    review_count = int(
-                        soup.select("#acrCustomerReviewText")[0]
-                        .get_text()
-                        .split(" ")[0]
-                        .replace(".", "")
-                    )
-                except:
-                    # sometimes review_score is in a different position... had to add this alternative with another try statement
+                        # this part gets the price in dollars from amazon.com store
+                        try:
+                            price = float(
+                                soup.find(id="priceblock_saleprice")
+                                .get_text()
+                                .replace("$", "")
+                                .replace(",", "")
+                                .strip()
+                            )
+                        except:
+                            price = ""
                     try:
                         review_score = float(
-                            soup.select('i[class*="a-icon a-icon-star a-star-"]')[1]
+                            soup.select('i[class*="a-icon a-icon-star a-star-"]')[0]
                             .get_text()
                             .split(" ")[0]
                             .replace(",", ".")
@@ -365,240 +418,291 @@ def search_product_list(interval_count=1, interval_hours=1):
                             .replace(".", "")
                         )
                     except:
-                        review_score = ""
-                        review_count = ""
+                        # sometimes review_score is in a different position... had to add this alternative with another try statement
+                        try:
+                            review_score = float(
+                                soup.select('i[class*="a-icon a-icon-star a-star-"]')[1]
+                                .get_text()
+                                .split(" ")[0]
+                                .replace(",", ".")
+                            )
+                            review_count = int(
+                                soup.select("#acrCustomerReviewText")[0]
+                                .get_text()
+                                .split(" ")[0]
+                                .replace(".", "")
+                            )
+                        except:
+                            review_score = ""
+                            review_count = ""
 
-                # checking if there is "Out of stock"
-                try:
-                    soup.select("#availability .a-color-state")[0].get_text().strip()
-                    stock = "Sem Stock"
-                except:
-                    # checking if there is "Out of stock" on a second possible position
+                    # checking if there is "Out of stock"
                     try:
-                        soup.select("#availability .a-color-price")[
+                        soup.select("#availability .a-color-state")[
                             0
                         ].get_text().strip()
                         stock = "Sem Stock"
                     except:
-                        # if there is any error in the previous try statements, it means the product is available
-                        stock = "Disponivel"
-            elif "mediamarkt" in url:
-                title = soup.select(".product-center-column h1")[0].get_text().strip()
-                # print(title)
-
-                try:
-                    price = soup.select(".bigprices")[0].get_text().split()
-                    if len(price) > 1:
-                        price = price[0] + price[1]
-                    else:
-                        price = price[0]
-                    # print(price)
-                except:
-                    price = ""
-                    # print(price)
-                try:
-                    if soup.find(id="AddToCartText").get_text().strip() == "Comprar":
-                        stock = "Disponivel"
-                        # print(stock)
-                    else:
-                        stock = "Sem Stock"
-                        # print(stock)
-                except:
-                    stock = "ERRO NO STOCK"
-                    print(stock)
-            elif "chip7" in url:
-                title = soup.select(".product-title h1")[0].get_text().strip()
-                # print(title)
-
-                try:
-                    price = (
-                        soup.select(".our_price_display")[0]
-                        .get_text()
-                        .replace("€", "")
-                        .replace(",", ".")
-                        .split()
+                        # checking if there is "Out of stock" on a second possible position
+                        try:
+                            soup.select("#availability .a-color-price")[
+                                0
+                            ].get_text().strip()
+                            stock = "Sem Stock"
+                        except:
+                            # if there is any error in the previous try statements, it means the product is available
+                            stock = "Disponivel"
+                elif "mediamarkt" in url:
+                    title = (
+                        soup.select(".product-center-column h1")[0].get_text().strip()
                     )
-                    if len(price) > 1:
-                        price = price[0] + price[1]
-                    else:
-                        price = price[0]
-                    # print(price)
-                except:
-                    price = ""
-                    # print(price)
+                    # print(title)
+
+                    try:
+                        price = soup.select(".bigprices")[0].get_text().split()
+                        if len(price) > 1:
+                            price = price[0] + price[1]
+                        else:
+                            price = price[0]
+                        # print(price)
+                    except:
+                        price = ""
+                        # print(price)
+                    try:
+                        if (
+                            soup.find(id="AddToCartText").get_text().strip()
+                            == "Comprar"
+                        ):
+                            stock = "Disponivel"
+                            # print(stock)
+                        else:
+                            stock = "Sem Stock"
+                            # print(stock)
+                    except:
+                        stock = "ERRO NO STOCK"
+                        print(stock)
+                elif "chip7" in url:
+                    title = soup.select(".product-title h1")[0].get_text().strip()
+                    # print(title)
+
+                    try:
+                        price = (
+                            soup.select(".our_price_display")[0]
+                            .get_text()
+                            .replace("€", "")
+                            .replace(",", ".")
+                            .split()
+                        )
+                        if len(price) > 1:
+                            price = price[0] + price[1]
+                        else:
+                            price = price[0]
+                        # print(price)
+                    except:
+                        price = ""
+                        # print(price)
+                    try:
+                        # print(soup.select('.chip7-disponibilidade')[0].get_text().strip())
+                        if (
+                            soup.select(".chip7-disponibilidade")[0].get_text().strip()
+                            == "Dísponivel"
+                        ):
+                            stock = "Disponivel"
+                            # print(stock)
+                        else:
+                            stock = "Sem Stock"
+                            # print(stock)
+                    except:
+                        stock = "ERRO NO STOCK"
+                        print(stock)
+                elif "chiptec" in url:
+                    title = soup.select(".prod_tit")[0].get_text().strip()
+                    # print(title)
+
+                    try:
+                        price = (
+                            soup.select(".price")[1]
+                            .get_text()
+                            .replace("€", "")
+                            .replace(",", ".")
+                            .split()
+                        )
+                        if len(price) > 1:
+                            price = price[0] + price[1]
+                        else:
+                            price = price[0]
+                        # print(price)
+                    except:
+                        price = ""
+                        # print(price)
+                    try:
+                        if (
+                            soup.select(".availability")[0].get_text().strip()
+                            == "Disponibilidade: Disponível"
+                        ):
+                            stock = "Disponivel"
+                            # print(stock)
+                        elif (
+                            soup.select(".availability")[0].get_text().strip()
+                            == "Disponibilidade: Por Encomenda"
+                        ):
+                            stock = "Por Encomenda"
+                            # print(stock)
+                        else:
+                            stock = "Sem Stock"
+                            # print(stock)
+                    except:
+                        stock = "ERRO NO STOCK"
+                        print(stock)
+                elif "globaldata" in url:
+                    title = soup.find(name="title").get_text().strip()
+                    # print(title)
+
+                    try:
+                        price = (
+                            soup.select(".h1")[0]
+                            .get_text()
+                            .replace("€", "")
+                            .replace(",", ".")
+                            .split()
+                        )
+                        if len(price) > 1:
+                            price = price[0] + price[1]
+                        else:
+                            price = price[0]
+                        # print(price)
+                    except:
+                        price = ""
+                        # print(price)
+
+                    try:
+                        # print(soup.select('.availability-text')[0].get_text().strip())
+                        st = soup.select(".availability-text")[0].get_text().strip()
+                        # print(st)
+                        if "Em stock" in st:
+                            stock = "Disponivel"
+                            # print(stock)
+                        elif "Poucas unidades" in st:
+                            stock = "Disponivel, mas com poucas unidades"
+                            # print(stock)
+                        else:
+                            stock = "Sem Stock"
+                            # print(stock)
+                    except:
+                        stock = "ERRO NO STOCK"
+                        print(stock)
+                ####################Parte do Log########################################################
+                if "amazon" in url:  # porque tem as reviews
+                    log = pd.DataFrame(
+                        {
+                            "date": now.replace("h", ":").replace("m", ""),
+                            # this code comes from the TRACKER_PRODUCTS file
+                            "code": self.prod_tracker.codigo[count],
+                            "url": url,
+                            "title": title,
+                            # this price comes from the TRACKER_PRODUCTS file ###ATENCAO####
+                            "buy_below": self.prod_tracker.comprar_abaixo[count],
+                            "price": price,
+                            "stock": stock,
+                            "review_score": review_score,
+                            "review_count": review_count,
+                        },
+                        index=[count],
+                    )
+                else:
+                    review_score = "-"
+                    review_count = "-"
+                    log = pd.DataFrame(
+                        {
+                            "date": now.replace("h", ":").replace("m", ""),
+                            # this code comes from the TRACKER_PRODUCTS file
+                            "code": self.prod_tracker.codigo[count],
+                            "url": url,
+                            "title": title,
+                            # this price comes from the TRACKER_PRODUCTS file ###ATENCAO####
+                            "buy_below": self.prod_tracker.comprar_abaixo[count],
+                            "price": price,
+                            "stock": stock,
+                            "review_score": review_score,
+                            "review_count": review_count,
+                        },
+                        index=[count],
+                    )
+                ############################################################################################
                 try:
-                    # print(soup.select('.chip7-disponibilidade')[0].get_text().strip())
-                    if (
-                        soup.select(".chip7-disponibilidade")[0].get_text().strip()
-                        == "Dísponivel"
+                    # This is where you can integrate an email alert!
+                    if price < self.prod_tracker.comprar_abaixo[count] and (
+                        stock == "Disponivel"
+                        or stock == "Disponivel, mas com poucas unidades"
                     ):
-                        stock = "Disponivel"
-                        # print(stock)
-                    else:
-                        stock = "Sem Stock"
-                        # print(stock)
+                        print(
+                            "************************ ALERT! Buy the "
+                            + self.prod_tracker.codigo[count]
+                            + " ************************"
+                        )
+                        self.send_email(
+                            "Plynkss@hotmail.com",
+                            "Adral_2020_2021",
+                            lista_mail,
+                            title,
+                            price,
+                            url,
+                        )
+
                 except:
-                    stock = "ERRO NO STOCK"
-                    print(stock)
-            elif "chiptec" in url:
-                title = soup.select(".prod_tit")[0].get_text().strip()
-                # print(title)
+                    # sometimes we don't get any price, so there will be an error in the if condition above
+                    pass
+                self.search_tracker_log = self.search_tracker_log.append(log)
+                # print('appended '+ prod_tracker.code[count] +'\n' + title + '\n' + stock + '\n\n')
+                print(title + "\n" + stock + "\n\n")
+                sleep(5)
 
-                try:
-                    price = (
-                        soup.select(".price")[1]
-                        .get_text()
-                        .replace("€", "")
-                        .replace(",", ".")
-                        .split()
-                    )
-                    if len(price) > 1:
-                        price = price[0] + price[1]
-                    else:
-                        price = price[0]
-                    # print(price)
-                except:
-                    price = ""
-                    # print(price)
-                try:
-                    if (
-                        soup.select(".availability")[0].get_text().strip()
-                        == "Disponibilidade: Disponível"
-                    ):
-                        stock = "Disponivel"
-                        # print(stock)
-                    elif (
-                        soup.select(".availability")[0].get_text().strip()
-                        == "Disponibilidade: Por Encomenda"
-                    ):
-                        stock = "Por Encomenda"
-                        # print(stock)
-                    else:
-                        stock = "Sem Stock"
-                        # print(stock)
-                except:
-                    stock = "ERRO NO STOCK"
-                    print(stock)
-            elif "globaldata" in url:
-                title = soup.find(name="title").get_text().strip()
-                # print(title)
+            interval += 1  # counter update
 
-                try:
-                    price = (
-                        soup.select(".h1")[0]
-                        .get_text()
-                        .replace("€", "")
-                        .replace(",", ".")
-                        .split()
-                    )
-                    if len(price) > 1:
-                        price = price[0] + price[1]
-                    else:
-                        price = price[0]
-                    # print(price)
-                except:
-                    price = ""
-                    # print(price)
+            sleep(interval_seconds * 1 * 1)
+            print("Fim do intervalo " + str(interval))
 
-                try:
-                    # print(soup.select('.availability-text')[0].get_text().strip())
-                    st = soup.select(".availability-text")[0].get_text().strip()
-                    # print(st)
-                    if "Em stock" in st:
-                        stock = "Disponivel"
-                        # print(stock)
-                    elif "Poucas unidades" in st:
-                        stock = "Disponivel, mas com poucas unidades"
-                        # print(stock)
-                    else:
-                        stock = "Sem Stock"
-                        # print(stock)
-                except:
-                    stock = "ERRO NO STOCK"
-                    print(stock)
-            ####################Parte do Log########################################################
-            if "amazon" in url:  # porque tem as reviews
-                log = pd.DataFrame(
-                    {
-                        "date": now.replace("h", ":").replace("m", ""),
-                        # this code comes from the TRACKER_PRODUCTS file
-                        "code": prod_tracker.code[count],
-                        "url": url,
-                        "title": title,
-                        # this price comes from the TRACKER_PRODUCTS file ###ATENCAO####
-                        "buy_below": prod_tracker.buy_below[count],
-                        "price": price,
-                        "stock": stock,
-                        "review_score": review_score,
-                        "review_count": review_count,
-                    },
-                    index=[count],
-                )
-            else:
-                review_score = "-"
-                review_count = "-"
-                log = pd.DataFrame(
-                    {
-                        "date": now.replace("h", ":").replace("m", ""),
-                        # this code comes from the TRACKER_PRODUCTS file
-                        "code": prod_tracker.code[count],
-                        "url": url,
-                        "title": title,
-                        # this price comes from the TRACKER_PRODUCTS file ###ATENCAO####
-                        "buy_below": prod_tracker.buy_below[count],
-                        "price": price,
-                        "stock": stock,
-                        "review_score": review_score,
-                        "review_count": review_count,
-                    },
-                    index=[count],
-                )
-            ############################################################################################
-            try:
-                # This is where you can integrate an email alert!
-                if price < prod_tracker.buy_below[count] and (
-                    stock == "Disponivel"
-                    or stock == "Disponivel, mas com poucas unidades"
-                ):
-                    print(
-                        "************************ ALERT! Buy the "
-                        + prod_tracker.code[count]
-                        + " ************************"
-                    )
-                    # send_email(
-                    #     "Plynkss@hotmail.com",
-                    #     "Adral_2020_2021",
-                    #     ["andre.rodrigues@adral.pt", "andresrodrigues@ua.pt"],
-                    #     title,
-                    #     price,
-                    #     url,
-                    # )
+        # after the run, checks last search history record, and appends this run results to it, saving a new file
+        # path to last file in the folder
+        last_search = glob("search_history/*.xlsx")[-1]
+        search_hist = pd.read_excel(last_search)
+        final_df = search_hist.append(self.search_tracker_log, sort=False)
 
-            except:
-                # sometimes we don't get any price, so there will be an error in the if condition above
-                pass
-            tracker_log = tracker_log.append(log)
-            # print('appended '+ prod_tracker.code[count] +'\n' + title + '\n' + stock + '\n\n')
-            print(title + "\n" + stock + "\n\n")
-            sleep(5)
+        # save the new file with the information, now - data
+        final_df.to_excel(
+            "search_history/SEARCH_HISTORY_{}.xlsx".format(now), index=False
+        )
+        print("Fim do tracking")
+        self.close_window()
 
-        interval += 1  # counter update
+    def send_email(
+        self, email, password, targets, title, price, url
+    ):  # tem de ser outlook o que envia
+        print("almost email.....")
+        server = smtplib.SMTP(host="smtp.outlook.com", port=587)
+        server.starttls()
 
-        sleep(interval_hours * 1 * 1)
-        print("end of interval " + str(interval))
+        sender = email
+        # targets = ["andre.rodrigues@adral.pt","andresrodrigues@ua.pt"]
 
-    # after the run, checks last search history record, and appends this run results to it, saving a new file
-    # path to last file in the folder
-    last_search = glob("search_history/*.xlsx")[-1]
-    search_hist = pd.read_excel(last_search)
-    final_df = search_hist.append(tracker_log, sort=False)
+        # server = smtplib.SMTP_SSL('host', port)
+        server.ehlo()
+        server.login(email, password)
+        sleep(5)
 
-    # save the new file with the information, now - data
-    final_df.to_excel("search_history/SEARCH_HISTORY_{}.xlsx".format(now), index=False)
-    print("end of search")
+        msg = MIMEText(
+            "O produto {} está um preço bombástico de {} e tem stock URL {}".format(
+                title, price, url
+            )
+        )
+        msg["Subject"] = title
+        msg["From"] = sender
+        msg["To"] = ", ".join(targets)
 
+        server.sendmail(sender, targets, msg.as_string())
+        print("sent email.....")
+        server.quit()
 
-# search_product_list()
 
 # Create a window and pass it to the Application object
 App(tkinter.Tk(), "Tracking", prod_tracker, search_tracker_log, tracker_log)
