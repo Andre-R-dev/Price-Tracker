@@ -241,7 +241,7 @@ class App:
         if (
             t_int.isdecimal and t_int != "" and int(t_int) > 5
         ):  # tem de ter um numero superior a 5s entre ciclos
-            t_entre_intervalos = int(t_int) - 5
+            t_entre_intervalos = int(t_int) - 1
         else:
             messagebox.showinfo(
                 "Informação",
@@ -249,9 +249,9 @@ class App:
             )
         t_tot = str(self.leitor_t_total.get())
         if t_tot.isdecimal and t_tot != "":
-            t_tot = (int(t_tot) * 3600) / 60
+            t_tot = (int(t_tot) * 60) / 1
             n_intervalos = int(t_tot) / (
-                t_entre_intervalos  # + (5 * len(self.prod_tracker.url))
+                t_entre_intervalos + (len(self.prod_tracker.url))
             )
         else:
             messagebox.showinfo(
@@ -305,11 +305,10 @@ class App:
 
         """
         interval = 0  # counter reset
-
+        now = datetime.now().strftime("%Y-%m-%d %Hh%Mm")  # DATA E HORA
         while interval < interval_count:
 
             for count, url in enumerate(self.prod_tracker.url):
-                now = datetime.now().strftime("%Y-%m-%d %Hh%Mm")  # DATA E HORA
                 print(url)
                 page = requests.get(url, headers=HEADERS)
                 # cria um objeto que contem a info da url mas de forma organizada != do page
@@ -635,19 +634,25 @@ class App:
                         stock == "Disponivel"
                         or stock == "Disponivel, mas com poucas unidades"
                     ):
+                        # try:
+
+                        # ver se o estado anterior é igual ao presente em termos de preco baixo e disponibilidade
+                        # atraves do count
+                        # except:
+                        # caso o count nao dê significa que estamos no inicio logo podemos displotar alerta
                         print(
                             "************************ ALERT! Buy the "
                             + self.prod_tracker.codigo[count]
                             + " ************************"
                         )
-                        self.send_email(
-                            "Plynkss@hotmail.com",
-                            "Adral_2020_2021",
-                            lista_mail,
-                            title,
-                            price,
-                            url,
-                        )
+                        # self.send_email(
+                        #     "Plynkss@hotmail.com",
+                        #     "Adral_2020_2021",
+                        #     lista_mail,
+                        #     title,
+                        #     price,
+                        #     url,
+                        # )
 
                 except:
                     # sometimes we don't get any price, so there will be an error in the if condition above
@@ -655,7 +660,7 @@ class App:
                 self.search_tracker_log = self.search_tracker_log.append(log)
                 # print('appended '+ prod_tracker.code[count] +'\n' + title + '\n' + stock + '\n\n')
                 print(title + "\n" + stock + "\n\n")
-                sleep(5)
+                sleep(1)  # inicialmente 5s
 
             interval += 1  # counter update
 
