@@ -17,17 +17,17 @@ HEADERS = {
 }
 ### LER/CRIAR FICHEIRO TRACK###
 try:
-    """Lê o csv com o track das coisas que queremos"""
-    prod_tracker = pd.read_csv("TRACKER_TEST2.csv", sep=";")
+    """Lê o excel com o track das coisas que queremos"""
+    prod_tracker = pd.read_excel("TRACKER_TEST2.xlsx")
     search_tracker_log = pd.DataFrame()
     tracker_log = pd.DataFrame()
 except:
-    """Cria o csv inicial para fazer Track do que queremos"""
+    """Cria o excel inicial para fazer Track do que queremos"""
     head_excel = ["url", "codigo", "comprar abaixo"]
     head = pd.DataFrame(columns=head_excel)
-    head.to_csv("TRACKER_TEST2.csv", sep=";", index=0)
-    """Lê o csv com o track das coisas que queremos"""
-    prod_tracker = pd.read_csv("TRACKER_TEST2.csv", sep=";")
+    head.to_excel("TRACKER_TEST2.xlsx", index=0)
+    """Lê o excel com o track das coisas que queremos"""
+    prod_tracker = pd.read_excel("TRACKER_TEST2.xlsx")
     search_tracker_log = pd.DataFrame()
     tracker_log = pd.DataFrame()
 
@@ -66,7 +66,7 @@ class App:
             text="Adicionar Dados à Busca",
             width=20,
             height=1,
-            command=self.Append_CSV,
+            command=self.Append_Excel,
         )
         self.btn_append_track.place(x=210, y=70)
 
@@ -129,7 +129,7 @@ class App:
             fg="black",
             font=("Arial", 10),
             bg="white",
-            width=10,
+            width=20,
             borderwidth=2,
             relief="groove",
         )
@@ -138,13 +138,12 @@ class App:
         self.leitor_buybellow = tkinter.Entry(self.window)
         self.leitor_buybellow.place(x=90, y=35)
 
-    """Funcao para adicionar novas urls ao csv tracker"""
+    """Funcao para adicionar novas urls ao excel tracker"""
 
-    def Append_CSV(self):
+    def Append_Excel(self):
         url_track_append = str(self.leitor_url.get())
         code_track_append = str(self.leitor_code.get())
         buybellow_track_append = str(self.leitor_buybellow.get())
-        print("inicio append")
         """Ver se a url é das lojas possíveis de analisar"""
         if (
             (
@@ -169,23 +168,21 @@ class App:
                 {
                     "url": url_track_append,
                     "codigo": code_track_append,
-                    "compra abaixo": buybellow_track_append,
+                    "comprar abaixo": buybellow_track_append,
                 },
                 index=[self.i_track],
             )  # alocar primeiro ao dataframe
-            self.csv_prod_tracker = prod_tracker.append(log_track)
-            print(self.csv_prod_tracker)
-            # self.csv_prod_tracker.to_csv(
-            #     "TRACKER_TEST2.csv", sep=";"
-            # )  ##############################################
+            self.tracker_log = self.tracker_log.append(log_track)
+            print(self.tracker_log)
+
             self.i_track += 1
-            print(self.i_track)
-            print("append done")
-        # after the run, checks last search history record, and appends this run results to it, saving a new file
 
     def Run_Prg(self):
+        self.prod_tracker = self.prod_tracker.append(
+            self.tracker_log
+        )  # prod_tracker é o read_excel
         # save the  file with the information
-        self.csv_prod_tracker.to_csv("TRACKER_TEST2.csv", sep=";")
+        self.prod_tracker.to_excel("TRACKER_TEST2.xlsx", index=False)
 
 
 # log = pd.DataFrame(

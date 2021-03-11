@@ -1,6 +1,12 @@
 TRACKER_TEST.csv
 TRACKER_TEST2.csv
+TRACKER_TEST2.xlsx
 teste.py
 README.md
 .vscode
 track_compass.py
+icon
+build
+dist
+track_compass.spec
+icon.ico
