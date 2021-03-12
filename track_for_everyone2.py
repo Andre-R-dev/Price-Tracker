@@ -33,8 +33,6 @@ except:
     tracker_log = pd.DataFrame()
 
 ### CRIAR FICHEIRO SEARCH CASO NAO EXISTA###
-# path to last file in the folder
-# last_search = glob("search_history/*.xlsx")[-1]
 try:
     """Tenta ler o excel com as nossas pesquisas"""
     glob("search_history/*.xlsx")[-1]
@@ -69,6 +67,10 @@ class App:
         self.window = window  # "tkinter.Tk()"
         self.window.title(window_title)
         self.window.geometry("500x500")
+        # path = os.getcwd().replace("\\", "/")
+        # path = path + "/icone.png"
+        # self.window.iconphoto(False, tkinter.PhotoImage(file=path
+        # ))
         # window.attributes('-fullscreen',True) # maximiza a janela
 
         self.prod_tracker = prod_tracker
@@ -88,7 +90,7 @@ class App:
         )
         self.btn_close.place(x=385, y=0)
 
-        """Botão que adiciona um link ao csv"""
+        """Botão que adiciona um link ao excel do track"""
         self.btn_append_track = tkinter.Button(
             window,
             text="Adicionar Dados à Busca",
@@ -96,13 +98,19 @@ class App:
             height=1,
             command=self.Append_Excel,
         )
-        self.btn_append_track.place(x=210, y=70)
+        self.btn_append_track.place(x=190, y=90)
 
         """Botão que corre o programa"""
         self.btn_append_track = tkinter.Button(
             window, text="Run", width=20, height=1, command=self.Run_Prg,
         )
-        self.btn_append_track.place(x=10, y=0)
+        self.btn_append_track.place(x=10, y=470)
+
+        """Botão de report"""
+        self.btn_report = tkinter.Button(
+            window, text="Reporta o problema", width=20, height=1, command=self.Report,
+        )
+        self.btn_report.place(x=300, y=470)
 
         ###############################################
 
@@ -116,7 +124,7 @@ class App:
         self.window.destroy()
 
     def Label_Inicial(self):
-        # Entrada de texto relativamente à URL que vamos fazer track
+        """Entrada de texto relativamente à URL que vamos fazer track"""
         self.leitor_url_text = tkinter.Label(
             self.window,
             text="Url do item",
@@ -127,47 +135,46 @@ class App:
             borderwidth=2,
             relief="groove",
         )
-        self.leitor_url_text.place(x=210, y=100)
+        self.leitor_url_text.place(x=10, y=30)
 
         self.leitor_url = tkinter.Entry(self.window)
-        self.leitor_url.place(x=190, y=125)
+        self.leitor_url.place(x=10, y=60)
 
-        # Entrada de texto relativamente ao código do
-        # utilizador que vamos fazer utilizar para cada objeto
+        """Entrada de texto relativamente ao código do utilizador que vamos fazer utilizar para cada objeto"""
         self.leitor_code_text = tkinter.Label(
             self.window,
             text="Código do item",
             fg="black",
             font=("Arial", 10),
             bg="white",
-            width=10,
+            width=15,
             borderwidth=2,
             relief="groove",
         )
-        self.leitor_code_text.place(x=100, y=100)
+        self.leitor_code_text.place(x=10, y=90)
 
         self.leitor_code = tkinter.Entry(self.window)
-        self.leitor_code.place(x=60, y=125)
+        self.leitor_code.place(x=10, y=120)
 
-        # Entrada de texto relativamente ao valor a partir do qual
-        # o utilizador pretende comprar o objeto
+        """Entrada de texto relativamente ao valor a partir do
+         qual o utilizador pretende comprar o objeto"""
         self.leitor_buybellow_text = tkinter.Label(
             self.window,
-            text="Preço abaixo do qual envia aviso",
+            text="Preço abaixo do qual pretende o aviso",
             fg="black",
             font=("Arial", 10),
             bg="white",
-            width=20,
+            width=30,
             borderwidth=2,
             relief="groove",
         )
-        self.leitor_buybellow_text.place(x=110, y=30)
+        self.leitor_buybellow_text.place(x=10, y=150)
 
         self.leitor_buybellow = tkinter.Entry(self.window)
-        self.leitor_buybellow.place(x=90, y=55)
+        self.leitor_buybellow.place(x=10, y=180)
 
-        # Entrada de texto relativamente ao intervalo entre pesquisas
-        #  quantos dados a pessoa quer ter sobre cada objeto
+        """Entrada de texto relativamente ao intervalo entre pesquisas
+            quantos dados a pessoa quer ter sobre cada objeto"""
         self.leitor_t_ciclo_text = tkinter.Label(
             self.window,
             text="Intervalo de tempo entre pesquisas",
@@ -178,12 +185,12 @@ class App:
             borderwidth=2,
             relief="groove",
         )
-        self.leitor_t_ciclo_text.place(x=110, y=190)
+        self.leitor_t_ciclo_text.place(x=10, y=260)
 
         self.leitor_t_ciclo = tkinter.Entry(self.window)
-        self.leitor_t_ciclo.place(x=90, y=220)
+        self.leitor_t_ciclo.place(x=10, y=290)
 
-        # Entrada de texto relativamente ao tempo que o programa vai correr
+        """Entrada de texto relativamente ao tempo que o programa vai correr"""
         self.leitor_t_total_text = tkinter.Label(
             self.window,
             text="Tempo que o programa corre em minutos",
@@ -194,12 +201,12 @@ class App:
             borderwidth=2,
             relief="groove",
         )
-        self.leitor_t_total_text.place(x=200, y=330)
+        self.leitor_t_total_text.place(x=10, y=320)
 
         self.leitor_t_total = tkinter.Entry(self.window)
-        self.leitor_t_total.place(x=200, y=350)
+        self.leitor_t_total.place(x=10, y=350)
 
-        # Entrada de texto relativamente ao email para onde vai receber o aviso
+        """Entrada de texto relativamente ao email para onde vai receber o aviso"""
         self.leitor_mail_text = tkinter.Label(
             self.window,
             text="E-mail para o alerta",
@@ -210,10 +217,26 @@ class App:
             borderwidth=2,
             relief="groove",
         )
-        self.leitor_mail_text.place(x=310, y=430)
+        self.leitor_mail_text.place(x=10, y=380)
 
         self.leitor_mail = tkinter.Entry(self.window)
-        self.leitor_mail.place(x=300, y=450)
+        self.leitor_mail.place(x=10, y=410)
+
+        """Entrada de texto REPORT"""
+        self.leitor_report_text = tkinter.Label(
+            self.window,
+            text="Reportar Erros",
+            fg="black",
+            font=("Arial", 10),
+            bg="white",
+            width=20,
+            borderwidth=2,
+            relief="groove",
+        )
+        self.leitor_report_text.place(x=300, y=380)
+
+        self.leitor_report = tkinter.Entry(self.window, width="30",)
+        self.leitor_report.place(x=300, y=410)
 
     """Funcao para adicionar novas urls ao excel tracker"""
 
@@ -766,6 +789,11 @@ class App:
         server.sendmail(sender, targets, msg.as_string())
         print("sent email.....")
         server.quit()
+
+    def Report(self):
+        texto_report = str(self.leitor_report.get())
+        if texto_report != "":
+            print("mudar funcao mail")
 
 
 # Create a window and pass it to the Application object
