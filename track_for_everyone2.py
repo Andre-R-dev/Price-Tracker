@@ -251,7 +251,7 @@ class App:
         if t_tot.isdecimal and t_tot != "":
             t_tot = (int(t_tot) * 60) / 1
             n_intervalos = int(t_tot) / (
-                t_entre_intervalos + (len(self.prod_tracker.url))
+                t_entre_intervalos  # + (len(self.prod_tracker.url))
             )
         else:
             messagebox.showinfo(
@@ -306,6 +306,11 @@ class App:
         """
         interval = 0  # counter reset
         now = datetime.now().strftime("%Y-%m-%d %Hh%Mm")  # DATA E HORA
+
+        # path to last file in the folder
+        last_search = glob("search_history/*.xlsx")[-1]
+        search_hist = pd.read_excel(last_search)
+
         while interval < interval_count:
 
             for count, url in enumerate(self.prod_tracker.url):
@@ -630,30 +635,58 @@ class App:
                 ############################################################################################
                 try:
                     # This is where you can integrate an email alert!
-                    if price < self.prod_tracker.comprar_abaixo[count] and (
+                    if float(price) < self.prod_tracker.comprar_abaixo[count] and (
                         stock == "Disponivel"
                         or stock == "Disponivel, mas com poucas unidades"
                     ):
-                        # try:
+                        try:
+                            """Vou ver o que está antes no search_tracker_log e ver se é diferente\
+                                caso seja, mandar alerta. Vou ver o preco e o stock."""
+                            stock_atual = log.stock.array[0]
+                            stock_anterior = self.search_tracker_log.stock.array[
+                                (
+                                    len(self.search_tracker_log.stock)
+                                    - (
+                                        len(prod_tracker.url) - count + 1
+                                    )  # 1 devido ao indice começar em 0
+                                ) :
+                            ]
+                            stock_anterior = stock_anterior[0]
+                            preco_atual = log.price.array[0]
+                            preco_anterior = self.search_tracker_log.price.array[
+                                (
+                                    len(self.search_tracker_log.price)
+                                    - (
+                                        len(prod_tracker.url) - count + 1
+                                    )  # 1 devido ao indice começar em 0
+                                ) :
+                            ]
+                            preco_anterior = preco_anterior[0]
 
-                        # ver se o estado anterior é igual ao presente em termos de preco baixo e disponibilidade
-                        # atraves do count
-                        # except:
-                        # caso o count nao dê significa que estamos no inicio logo podemos displotar alerta
-                        print(
-                            "************************ ALERT! Buy the "
-                            + self.prod_tracker.codigo[count]
-                            + " ************************"
-                        )
-                        # self.send_email(
-                        #     "Plynkss@hotmail.com",
-                        #     "Adral_2020_2021",
-                        #     lista_mail,
-                        #     title,
-                        #     price,
-                        #     url,
-                        # )
-
+                            """Ver se o estado anterior é igual ao presente em termos de preco baixo e disponibilidade"""
+                            if (
+                                (
+                                    stock_atual != stock_anterior
+                                    or preco_atual != preco_anterior
+                                )
+                                and len(self.search_tracker_log) > len(prod_tracker.url)
+                            ) or len(self.search_tracker_log) < len(prod_tracker.url):
+                                # Disparar alerta
+                                print(
+                                    "************************ ALERT! Buy the "
+                                    + self.prod_tracker.codigo[count]
+                                    + " ************************"
+                                )
+                                self.send_email(
+                                    "Plynkss@hotmail.com",
+                                    "Adral_2020_2021",
+                                    lista_mail,
+                                    title,
+                                    price,
+                                    url,
+                                )
+                        except:
+                            pass
                 except:
                     # sometimes we don't get any price, so there will be an error in the if condition above
                     pass
@@ -668,9 +701,6 @@ class App:
             print("Fim do intervalo " + str(interval))
 
         # after the run, checks last search history record, and appends this run results to it, saving a new file
-        # path to last file in the folder
-        last_search = glob("search_history/*.xlsx")[-1]
-        search_hist = pd.read_excel(last_search)
         final_df = search_hist.append(self.search_tracker_log, sort=False)
 
         # save the new file with the information, now - data
