@@ -9,6 +9,7 @@ import pandas as pd
 import numpy as np
 import requests
 from bs4 import BeautifulSoup
+import os
 
 # http://www.networkinghowtos.com/howto/common-user-agent-list/
 HEADERS = {
@@ -30,6 +31,33 @@ except:
     prod_tracker = pd.read_excel("TRACKER_TEST2.xlsx")
     search_tracker_log = pd.DataFrame()
     tracker_log = pd.DataFrame()
+
+### CRIAR FICHEIRO SEARCH CASO NAO EXISTA###
+# path to last file in the folder
+# last_search = glob("search_history/*.xlsx")[-1]
+try:
+    """Tenta ler o excel com as nossas pesquisas"""
+    glob("search_history/*.xlsx")[-1]
+except:
+    """Cria o excel inicial para fazer registar as pesquisas"""
+    head_search_excel = [
+        "date",
+        "code",
+        "url",
+        "title",
+        "buy_below",
+        "review_score",
+        "review_count",
+        "stock",
+    ]
+    path = os.getcwd().replace("\\", "/")  # deteta o folder onde estamos
+    try:
+        os.mkdir(path + "/search_history")
+    except:
+        pass
+    head_search = pd.DataFrame(columns=head_search_excel)
+    head_search.to_excel("search_history/SEARCH_HISTORY.xlsx", index=0)
+
 
 # now = datetime.now().strftime("%Y-%m-%d %Hh%Mm")  # DATA E HORA
 
@@ -689,7 +717,8 @@ class App:
                             pass
                 except:
                     # sometimes we don't get any price, so there will be an error in the if condition above
-                    pass
+                    messagebox.showinfo("Informação", "Erro na aquisição de dados")
+
                 self.search_tracker_log = self.search_tracker_log.append(log)
                 # print('appended '+ prod_tracker.code[count] +'\n' + title + '\n' + stock + '\n\n')
                 print(title + "\n" + stock + "\n\n")
