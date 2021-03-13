@@ -801,10 +801,13 @@ class App:
     def Report(self):
         texto_report = str(self.leitor_report.get())
         if texto_report != "":
-            # para dividir o email entre o nome o diretorio do email
-            indice_mail = self.lista_mail[0].find('@')
-            # o titulo vai ser o nome do primeiro email da lista de email a que envia normalmente o alerta
-            titulo = self.lista_mail[:indice_mail]
+            try:
+                # para dividir o email entre o nome o diretorio do email
+                indice_mail = self.lista_mail[0].find('@')
+                # o titulo vai ser o nome do primeiro email da lista de email a que envia normalmente o alerta
+                titulo = self.lista_mail[:indice_mail]
+            except:
+                titulo = "Report from someone"
             self.send_email(
                 "Plynkss@hotmail.com",
                 "Adral_2020_2021",
