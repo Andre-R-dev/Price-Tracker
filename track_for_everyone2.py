@@ -117,7 +117,8 @@ class App:
         """Cria as labels iniciais"""
         self.Label_Inicial()
 
-        self.window.mainloop()  # corre a janela em loop, todos os botões criados estão sempre prontos para serem carregados
+        # corre a janela em loop, todos os botões criados estão sempre prontos para serem carregados
+        self.window.mainloop()
 
     # Função para fechar as janelas quando o botão é pressionado
     def close_window(self):
@@ -318,24 +319,24 @@ class App:
             or ("@adral.pt" in l_mail)
             or ("@ua.pt" in l_mail)
         ):
-            lista_mail = [l_mail]
+            self.lista_mail = [l_mail]
         else:
             messagebox.showinfo(
                 "Informação", "Insira um email válido",
             )
 
-        lista_mail = [
+        self.lista_mail = [
             "andre.rodrigues@adral.pt",
             "andresrodrigues@ua.pt",
-        ]  ####ATENCAOOOO####################
+        ]  # ATENCAOOOO####################
 
         print(n_intervalos)
         print(t_entre_intervalos)
         self.search_product_list(
-            n_intervalos, t_entre_intervalos, lista_mail
+            n_intervalos, t_entre_intervalos, self.lista_mail
         )  # t_intervalos nunca é menor que 5s
 
-    def search_product_list(self, interval_count, interval_seconds, lista_mail):
+    def search_product_list(self, interval_count, interval_seconds):
         """
         It also requires a file called SEARCH_HISTORY.xslx under the folder ./search_history to start saving the results.
         An empty file can be used on the first time using the script.
@@ -404,7 +405,8 @@ class App:
                         stock = "Disponivel"
                         # print(stock)
                 elif "worten" in url:
-                    title = soup.select(".w-product__name")[0].get_text().strip()
+                    title = soup.select(
+                        ".w-product__name")[0].get_text().strip()
                     # print(title)
                     # to prevent script from crashing when there isn't a price for the product
                     try:
@@ -461,7 +463,8 @@ class App:
                             price = ""
                     try:
                         review_score = float(
-                            soup.select('i[class*="a-icon a-icon-star a-star-"]')[0]
+                            soup.select(
+                                'i[class*="a-icon a-icon-star a-star-"]')[0]
                             .get_text()
                             .split(" ")[0]
                             .replace(",", ".")
@@ -476,7 +479,8 @@ class App:
                         # sometimes review_score is in a different position... had to add this alternative with another try statement
                         try:
                             review_score = float(
-                                soup.select('i[class*="a-icon a-icon-star a-star-"]')[1]
+                                soup.select(
+                                    'i[class*="a-icon a-icon-star a-star-"]')[1]
                                 .get_text()
                                 .split(" ")[0]
                                 .replace(",", ".")
@@ -509,7 +513,8 @@ class App:
                             stock = "Disponivel"
                 elif "mediamarkt" in url:
                     title = (
-                        soup.select(".product-center-column h1")[0].get_text().strip()
+                        soup.select(
+                            ".product-center-column h1")[0].get_text().strip()
                     )
                     # print(title)
 
@@ -537,7 +542,8 @@ class App:
                         stock = "ERRO NO STOCK"
                         print(stock)
                 elif "chip7" in url:
-                    title = soup.select(".product-title h1")[0].get_text().strip()
+                    title = soup.select(
+                        ".product-title h1")[0].get_text().strip()
                     # print(title)
 
                     try:
@@ -559,7 +565,8 @@ class App:
                     try:
                         # print(soup.select('.chip7-disponibilidade')[0].get_text().strip())
                         if (
-                            soup.select(".chip7-disponibilidade")[0].get_text().strip()
+                            soup.select(
+                                ".chip7-disponibilidade")[0].get_text().strip()
                             == "Dísponivel"
                         ):
                             stock = "Disponivel"
@@ -632,7 +639,8 @@ class App:
 
                     try:
                         # print(soup.select('.availability-text')[0].get_text().strip())
-                        st = soup.select(".availability-text")[0].get_text().strip()
+                        st = soup.select(
+                            ".availability-text")[0].get_text().strip()
                         # print(st)
                         if "Em stock" in st:
                             stock = "Disponivel"
@@ -700,7 +708,7 @@ class App:
                                     - (
                                         len(prod_tracker.url) - count + 1
                                     )  # 1 devido ao indice começar em 0
-                                ) :
+                                ):
                             ]
                             stock_anterior = stock_anterior[0]
                             preco_atual = log.price.array[0]
@@ -710,7 +718,7 @@ class App:
                                     - (
                                         len(prod_tracker.url) - count + 1
                                     )  # 1 devido ao indice começar em 0
-                                ) :
+                                ):
                             ]
                             preco_anterior = preco_anterior[0]
 
@@ -728,19 +736,23 @@ class App:
                                     + self.prod_tracker.codigo[count]
                                     + " ************************"
                                 )
+
+                                subject_title_mail = title
+                                texto_mail = "O produto {} está um preço bombástico de {} e tem stock URL {}".format(
+                                    title, price, url
+                                )
                                 self.send_email(
                                     "Plynkss@hotmail.com",
                                     "Adral_2020_2021",
-                                    lista_mail,
-                                    title,
-                                    price,
-                                    url,
+                                    self.lista_mail,
+                                    subject_title_mail, texto_mail
                                 )
                         except:
                             pass
                 except:
                     # sometimes we don't get any price, so there will be an error in the if condition above
-                    messagebox.showinfo("Informação", "Erro na aquisição de dados")
+                    messagebox.showinfo(
+                        "Informação", "Erro na aquisição de dados")
 
                 self.search_tracker_log = self.search_tracker_log.append(log)
                 # print('appended '+ prod_tracker.code[count] +'\n' + title + '\n' + stock + '\n\n')
@@ -763,7 +775,7 @@ class App:
         self.close_window()
 
     def send_email(
-        self, email, password, targets, title, price, url
+        self, email, password, targets, subject_title_mail, texto_mail
     ):  # tem de ser outlook o que envia
         print("almost email.....")
         server = smtplib.SMTP(host="smtp.outlook.com", port=587)
@@ -777,12 +789,8 @@ class App:
         server.login(email, password)
         sleep(5)
 
-        msg = MIMEText(
-            "O produto {} está um preço bombástico de {} e tem stock URL {}".format(
-                title, price, url
-            )
-        )
-        msg["Subject"] = title
+        msg = MIMEText(texto_mail)
+        msg["Subject"] = subject_title_mail
         msg["From"] = sender
         msg["To"] = ", ".join(targets)
 
@@ -793,9 +801,17 @@ class App:
     def Report(self):
         texto_report = str(self.leitor_report.get())
         if texto_report != "":
-            print("mudar funcao mail")
+            # para dividir o email entre o nome o diretorio do email
+            indice_mail = self.lista_mail[0].find('@')
+            # o titulo vai ser o nome do primeiro email da lista de email a que envia normalmente o alerta
+            titulo = self.lista_mail[:indice_mail]
+            self.send_email(
+                "Plynkss@hotmail.com",
+                "Adral_2020_2021",
+                ["Plynkss@hotmail.com"],
+                titulo, texto_report
+            )
 
 
 # Create a window and pass it to the Application object
 App(tkinter.Tk(), "Tracking", prod_tracker, search_tracker_log, tracker_log)
-
