@@ -6,7 +6,7 @@ worten;\
 amazon (no geral, até americana);\
 mediamarkt;\
 chip7;\
-chiptec;\ 
+chiptec;\
 globaldata;\
 
 ## Contibuting
