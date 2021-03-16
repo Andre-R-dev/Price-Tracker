@@ -7,7 +7,7 @@ amazon (no geral, até americana);\
 mediamarkt;\
 chip7;\
 chiptec;\
-globaldata;\
+globaldata;
 
 ## Contibuting
 For major changes, please open an issue first to discuss what you would like to change. 
