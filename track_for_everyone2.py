@@ -56,7 +56,6 @@ except:
     head_search = pd.DataFrame(columns=head_search_excel)
     head_search.to_excel("search_history/SEARCH_HISTORY.xlsx", index=0)
 
-
 # now = datetime.now().strftime("%Y-%m-%d %Hh%Mm")  # DATA E HORA
 
 
@@ -117,7 +116,8 @@ class App:
         """Cria as labels iniciais"""
         self.Label_Inicial()
 
-        self.window.mainloop()  # corre a janela em loop, todos os botões criados estão sempre prontos para serem carregados
+        # corre a janela em loop, todos os botões criados estão sempre prontos para serem carregados
+        self.window.mainloop()
 
     # Função para fechar as janelas quando o botão é pressionado
     def close_window(self):
@@ -283,7 +283,10 @@ class App:
                 )  # prod_tracker é o read_excel
                 # save the  file with the information
                 self.prod_tracker.to_excel("TRACKER_TEST2.xlsx", index=False)
-                # self.prod_tracker = pd.read_excel("TRACKER_TEST2.xlsx")
+                self.prod_tracker = pd.read_excel(
+                    "TRACKER_TEST2.xlsx"
+                )  # Tem de voltar a ler o excel
+
         except:
             pass
 
@@ -318,24 +321,24 @@ class App:
             or ("@adral.pt" in l_mail)
             or ("@ua.pt" in l_mail)
         ):
-            lista_mail = [l_mail]
+            self.lista_mail = [l_mail]
         else:
             messagebox.showinfo(
                 "Informação", "Insira um email válido",
             )
 
-        lista_mail = [
+        self.lista_mail = [
             "andre.rodrigues@adral.pt",
             "andresrodrigues@ua.pt",
-        ]  ####ATENCAOOOO####################
+        ]  # ATENCAOOOO####################
 
         print(n_intervalos)
         print(t_entre_intervalos)
         self.search_product_list(
-            n_intervalos, t_entre_intervalos, lista_mail
+            n_intervalos, t_entre_intervalos
         )  # t_intervalos nunca é menor que 5s
 
-    def search_product_list(self, interval_count, interval_seconds, lista_mail):
+    def search_product_list(self, interval_count, interval_seconds):
         """
         It also requires a file called SEARCH_HISTORY.xslx under the folder ./search_history to start saving the results.
         An empty file can be used on the first time using the script.
@@ -365,7 +368,7 @@ class App:
         while interval < interval_count:
 
             for count, url in enumerate(self.prod_tracker.url):
-                print(url)
+                # print(url)
                 page = requests.get(url, headers=HEADERS)
                 # cria um objeto que contem a info da url mas de forma organizada != do page
                 soup = BeautifulSoup(page.content, features="lxml")
@@ -728,13 +731,17 @@ class App:
                                     + self.prod_tracker.codigo[count]
                                     + " ************************"
                                 )
+
+                                subject_title_mail = title
+                                texto_mail = "O produto {} está um preço bombástico de {} e tem stock URL {}".format(
+                                    title, price, url
+                                )
                                 self.send_email(
                                     "Plynkss@hotmail.com",
                                     "Adral_2020_2021",
-                                    lista_mail,
-                                    title,
-                                    price,
-                                    url,
+                                    self.lista_mail,
+                                    subject_title_mail,
+                                    texto_mail,
                                 )
                         except:
                             pass
@@ -744,13 +751,27 @@ class App:
 
                 self.search_tracker_log = self.search_tracker_log.append(log)
                 # print('appended '+ prod_tracker.code[count] +'\n' + title + '\n' + stock + '\n\n')
-                print(title + "\n" + stock + "\n\n")
+                print(
+                    title
+                    + " "
+                    + self.prod_tracker.codigo[count]
+                    + "\n"
+                    + stock
+                    + "\n"
+                    + price
+                    + "\n\n"
+                )
                 sleep(1)  # inicialmente 5s
 
             interval += 1  # counter update
 
             sleep(interval_seconds * 1 * 1)
-            print("Fim do intervalo " + str(interval))
+            print(
+                "Fim do intervalo "
+                + str(interval)
+                + "faltam "
+                + str(interval_count - interval)
+            )
 
         # after the run, checks last search history record, and appends this run results to it, saving a new file
         final_df = search_hist.append(self.search_tracker_log, sort=False)
@@ -763,7 +784,7 @@ class App:
         self.close_window()
 
     def send_email(
-        self, email, password, targets, title, price, url
+        self, email, password, targets, subject_title_mail, texto_mail
     ):  # tem de ser outlook o que envia
         print("almost email.....")
         server = smtplib.SMTP(host="smtp.outlook.com", port=587)
@@ -777,12 +798,8 @@ class App:
         server.login(email, password)
         sleep(5)
 
-        msg = MIMEText(
-            "O produto {} está um preço bombástico de {} e tem stock URL {}".format(
-                title, price, url
-            )
-        )
-        msg["Subject"] = title
+        msg = MIMEText(texto_mail)
+        msg["Subject"] = subject_title_mail
         msg["From"] = sender
         msg["To"] = ", ".join(targets)
 
@@ -793,9 +810,21 @@ class App:
     def Report(self):
         texto_report = str(self.leitor_report.get())
         if texto_report != "":
-            print("mudar funcao mail")
+            try:
+                # para dividir o email entre o nome o diretorio do email
+                indice_mail = self.lista_mail[0].find("@")
+                # o titulo vai ser o nome do primeiro email da lista de email a que envia normalmente o alerta
+                titulo = self.lista_mail[:indice_mail]
+            except:
+                titulo = "Report from someone"
+            self.send_email(
+                "Plynkss@hotmail.com",
+                "Adral_2020_2021",
+                ["Plynkss@hotmail.com"],
+                titulo,
+                texto_report,
+            )
 
 
 # Create a window and pass it to the Application object
 App(tkinter.Tk(), "Tracking", prod_tracker, search_tracker_log, tracker_log)
-
