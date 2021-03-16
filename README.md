@@ -1,6 +1,6 @@
 # Track_Prices
 
-# Lojas nas quais é possível fazer tracking:
+Lojas nas quais é possível fazer tracking: \n
 pcdiga;
 worten;
 amazon (no geral, até americana);
