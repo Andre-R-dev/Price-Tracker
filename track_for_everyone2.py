@@ -76,6 +76,7 @@ class App:
         self.search_tracker_log = search_tracker_log
         self.tracker_log = tracker_log
         self.i_track = 0
+        self.t_entre_url = 5
 
         """BOTÕES"""
         #############################################
@@ -243,7 +244,7 @@ class App:
             self.window,
             text="Tempo mínimo para correr um ciclo completo de pesquisa"
             + "\n"
-            + str(int(5 * len(self.prod_tracker.url)))
+            + str(int(self.t_entre_url * len(self.prod_tracker.url)))
             + " segundos",
             fg="black",
             font=("Arial", 8),
@@ -328,7 +329,9 @@ class App:
             t_tot = (int(t_tot) * 60) / 1  # passsar de minutos para segundos
             n_ciclos = int(t_tot) / (
                 t_entre_ciclos
-                + (5 * len(self.prod_tracker.url))  # t_total/tempo de ciclo completo
+                + (
+                    self.t_entre_url * len(self.prod_tracker.url)
+                )  # t_total/tempo de ciclo completo
             )
         else:
             messagebox.showinfo(
@@ -785,7 +788,7 @@ class App:
                     + price
                     + "\n\n"
                 )
-                sleep(5)  # inicialmente 5s
+                sleep(self.t_entre_url)  # inicialmente 5s
 
             interval += 1  # counter update
 
@@ -853,3 +856,4 @@ class App:
 
 # Create a window and pass it to the Application object
 App(tkinter.Tk(), "Tracking", prod_tracker, search_tracker_log, tracker_log)
+#
