@@ -335,7 +335,11 @@ class App:
         print(n_intervalos)
         print(t_entre_intervalos)
         self.search_product_list(
+<<<<<<< HEAD
             n_intervalos, t_entre_intervalos
+=======
+            n_intervalos, t_entre_intervalos, self.lista_mail
+>>>>>>> a6e173c6a965b1eda71a592c1885439bc3b654b0
         )  # t_intervalos nunca é menor que 5s
 
     def search_product_list(self, interval_count, interval_seconds):
@@ -407,7 +411,8 @@ class App:
                         stock = "Disponivel"
                         # print(stock)
                 elif "worten" in url:
-                    title = soup.select(".w-product__name")[0].get_text().strip()
+                    title = soup.select(
+                        ".w-product__name")[0].get_text().strip()
                     # print(title)
                     # to prevent script from crashing when there isn't a price for the product
                     try:
@@ -464,7 +469,8 @@ class App:
                             price = ""
                     try:
                         review_score = float(
-                            soup.select('i[class*="a-icon a-icon-star a-star-"]')[0]
+                            soup.select(
+                                'i[class*="a-icon a-icon-star a-star-"]')[0]
                             .get_text()
                             .split(" ")[0]
                             .replace(",", ".")
@@ -479,7 +485,8 @@ class App:
                         # sometimes review_score is in a different position... had to add this alternative with another try statement
                         try:
                             review_score = float(
-                                soup.select('i[class*="a-icon a-icon-star a-star-"]')[1]
+                                soup.select(
+                                    'i[class*="a-icon a-icon-star a-star-"]')[1]
                                 .get_text()
                                 .split(" ")[0]
                                 .replace(",", ".")
@@ -512,7 +519,8 @@ class App:
                             stock = "Disponivel"
                 elif "mediamarkt" in url:
                     title = (
-                        soup.select(".product-center-column h1")[0].get_text().strip()
+                        soup.select(
+                            ".product-center-column h1")[0].get_text().strip()
                     )
                     # print(title)
 
@@ -540,7 +548,8 @@ class App:
                         stock = "ERRO NO STOCK"
                         print(stock)
                 elif "chip7" in url:
-                    title = soup.select(".product-title h1")[0].get_text().strip()
+                    title = soup.select(
+                        ".product-title h1")[0].get_text().strip()
                     # print(title)
 
                     try:
@@ -562,7 +571,8 @@ class App:
                     try:
                         # print(soup.select('.chip7-disponibilidade')[0].get_text().strip())
                         if (
-                            soup.select(".chip7-disponibilidade")[0].get_text().strip()
+                            soup.select(
+                                ".chip7-disponibilidade")[0].get_text().strip()
                             == "Dísponivel"
                         ):
                             stock = "Disponivel"
@@ -635,7 +645,8 @@ class App:
 
                     try:
                         # print(soup.select('.availability-text')[0].get_text().strip())
-                        st = soup.select(".availability-text")[0].get_text().strip()
+                        st = soup.select(
+                            ".availability-text")[0].get_text().strip()
                         # print(st)
                         if "Em stock" in st:
                             stock = "Disponivel"
@@ -703,7 +714,7 @@ class App:
                                     - (
                                         len(prod_tracker.url) - count + 1
                                     )  # 1 devido ao indice começar em 0
-                                ) :
+                                ):
                             ]
                             stock_anterior = stock_anterior[0]
                             preco_atual = log.price.array[0]
@@ -713,7 +724,7 @@ class App:
                                     - (
                                         len(prod_tracker.url) - count + 1
                                     )  # 1 devido ao indice começar em 0
-                                ) :
+                                ):
                             ]
                             preco_anterior = preco_anterior[0]
 
@@ -740,14 +751,19 @@ class App:
                                     "Plynkss@hotmail.com",
                                     "Adral_2020_2021",
                                     self.lista_mail,
+<<<<<<< HEAD
                                     subject_title_mail,
                                     texto_mail,
+=======
+                                    subject_title_mail, texto_mail
+>>>>>>> a6e173c6a965b1eda71a592c1885439bc3b654b0
                                 )
                         except:
                             pass
                 except:
                     # sometimes we don't get any price, so there will be an error in the if condition above
-                    messagebox.showinfo("Informação", "Erro na aquisição de dados")
+                    messagebox.showinfo(
+                        "Informação", "Erro na aquisição de dados")
 
                 self.search_tracker_log = self.search_tracker_log.append(log)
                 # print('appended '+ prod_tracker.code[count] +'\n' + title + '\n' + stock + '\n\n')
@@ -812,7 +828,11 @@ class App:
         if texto_report != "":
             try:
                 # para dividir o email entre o nome o diretorio do email
+<<<<<<< HEAD
                 indice_mail = self.lista_mail[0].find("@")
+=======
+                indice_mail = self.lista_mail[0].find('@')
+>>>>>>> a6e173c6a965b1eda71a592c1885439bc3b654b0
                 # o titulo vai ser o nome do primeiro email da lista de email a que envia normalmente o alerta
                 titulo = self.lista_mail[:indice_mail]
             except:
@@ -821,8 +841,12 @@ class App:
                 "Plynkss@hotmail.com",
                 "Adral_2020_2021",
                 ["Plynkss@hotmail.com"],
+<<<<<<< HEAD
                 titulo,
                 texto_report,
+=======
+                titulo, texto_report
+>>>>>>> a6e173c6a965b1eda71a592c1885439bc3b654b0
             )
 
 
