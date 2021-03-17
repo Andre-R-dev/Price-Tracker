@@ -362,7 +362,7 @@ class App:
         print(n_ciclos)
         print(t_entre_ciclos)
         self.search_product_list(
-            n_ciclos, t_entre_ciclos
+            int(n_ciclos), int(t_entre_ciclos)
         )  # t_ciclos nunca é menor que 5s
 
     def search_product_list(self, interval_count, interval_seconds):
@@ -400,7 +400,7 @@ class App:
                 page = requests.get(url, headers=HEADERS)
                 # cria um objeto que contem a info da url mas de forma organizada != do page
                 soup = BeautifulSoup(page.content, features="lxml")
-                try:
+                try:  # este try e except garante que caso algo mude num site não interfira com o tracking
                     ##################DIFERENTES LEITURAS DOS SITES###########################################
                     if "pcdiga" in url:
                         # product title
@@ -683,6 +683,47 @@ class App:
                         except:
                             stock = "ERRO NO STOCK"
                             print(stock)
+                    elif "gamingreplay" in url:
+                        title = soup.find(name="title").get_text().strip()
+                        # print(title)
+
+                        try:
+                            price = (
+                                soup.select(".gr-label-new-price")[0]
+                                .get_text()
+                                .replace("€", "")
+                                .replace(",", ".")
+                                .split()
+                            )
+                            if len(price) > 1:
+                                price = price[0] + price[1]
+                            else:
+                                price = price[0]
+                            # print(price)
+                        except:
+                            price = ""
+                            # print(price)
+
+                        try:
+                            st = (
+                                soup.select("p.store_stock_feature.in_stock")[0]
+                                .get_text()
+                                .strip()
+                            )
+                            # print(st)
+                            if "Disponível" in st:
+                                stock = "Disponivel"
+                                # print(stock)
+                            elif "Poucas unidades" in st:
+                                stock = "Disponivel, mas com poucas unidades"
+                                # print(stock)
+                            else:
+                                stock = "Sem Stock"
+                                # print(stock)
+                        except:
+                            stock = "ERRO NO STOCK"
+                            # print(stock)
+
                     ####################Parte do Log########################################################
                     if "amazon" in url:  # porque tem as reviews
                         log = pd.DataFrame(
