@@ -723,6 +723,39 @@ class App:
                         except:
                             stock = "ERRO NO STOCK"
                             # print(stock)
+                    elif "mega-mania" in url:
+                        title = soup.select("td")[0].get_text().strip()
+
+                        try:
+                            price = (
+                                soup.select(".produto_lista_botoes__bt_preco")[0]
+                                .get_text()
+                                .replace("€", "")
+                                .replace(",", ".")
+                                .split()
+                            )
+                            if len(price) > 1:
+                                price = price[0] + price[1]
+                            else:
+                                price = price[0]
+                        except:
+                            price = ""
+                        try:
+                            st = (
+                                soup.select(".produto_lista_stock_emstock")[0]
+                                .get_text()
+                                .strip()
+                            )
+                            # print(st)
+                            if "stock" in st:
+                                stock = "Disponivel"
+                            elif "Poucas unidades" in st:
+                                stock = "Disponivel, mas com poucas unidades"
+                            else:
+                                stock = "Sem Stock"
+                        except:
+                            stock = "ERRO NO STOCK"
+                            print(stock)
 
                     ####################Parte do Log########################################################
                     if "amazon" in url:  # porque tem as reviews

@@ -10,7 +10,8 @@ mediamarkt;\
 chip7;\
 chiptec;\
 globaldata;\
-gamingreplay;
+gamingreplay;\
+mega-mania;
 
 
 ## Contributing
