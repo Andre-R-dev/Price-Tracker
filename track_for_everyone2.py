@@ -824,13 +824,11 @@ class App:
                         ############################################################################################
                         try:
                             # This is where you can integrate an email alert!
-                            if (
-                                float(price) < self.prod_tracker.comprar_abaixo[count]
-                                and (
-                                    stock == "Disponivel"
-                                    or stock == "Disponivel, mas com poucas unidades"
-                                )
-                                and interval != 0
+                            if float(price) < self.prod_tracker.comprar_abaixo[
+                                count
+                            ] and (
+                                stock == "Disponivel"
+                                or stock == "Disponivel, mas com poucas unidades"
                             ):
                                 try:
                                     """Vou ver o que está antes no search_tracker_log e ver se é diferente\
@@ -840,7 +838,7 @@ class App:
                                         (
                                             len(self.search_tracker_log.stock)
                                             - (
-                                                len(prod_tracker.url) - count + 1
+                                                len(prod_tracker.url)
                                             )  # 1 devido ao indice começar em 0
                                         ) :
                                     ]
@@ -850,7 +848,7 @@ class App:
                                         (
                                             len(self.search_tracker_log.price)
                                             - (
-                                                len(prod_tracker.url) - count + 1
+                                                len(prod_tracker.url)
                                             )  # 1 devido ao indice começar em 0
                                         ) :
                                     ]
