@@ -693,11 +693,12 @@ class App:
                                     .get_text()
                                     .strip()
                                 )
+                                st = st.lower()
                                 # print(st)
-                                if "Em stock" in st:
+                                if "em stock" in st:
                                     stock = "Disponivel"
                                     # print(stock)
-                                elif "Poucas unidades" in st:
+                                elif "poucas unidades" in st:
                                     stock = "Disponivel, mas com poucas unidades"
                                     # print(stock)
                                 else:
@@ -733,11 +734,12 @@ class App:
                                     .get_text()
                                     .strip()
                                 )
+                                st = st.lower()
                                 # print(st)
-                                if "Disponível" in st:
+                                if "disponível" in st:
                                     stock = "Disponivel"
                                     # print(stock)
-                                elif "Poucas unidades" in st:
+                                elif "poucas unidades" in st:
                                     stock = "Disponivel, mas com poucas unidades"
                                     # print(stock)
                                 else:
@@ -769,10 +771,44 @@ class App:
                                     .get_text()
                                     .strip()
                                 )
+                                st = st.lower()
                                 # print(st)
                                 if "stock" in st:
                                     stock = "Disponivel"
-                                elif "Poucas unidades" in st:
+                                elif "poucas unidades" in st:
+                                    stock = "Disponivel, mas com poucas unidades"
+                                else:
+                                    stock = "Sem Stock"
+                            except:
+                                stock = "ERRO NO STOCK"
+                                print(stock)
+                        elif "clickfiel" in url:
+                            title = soup.select("h1")[0].get_text().strip()
+                            try:
+                                price = (
+                                    soup.select(".price.new .whole")[0]
+                                    .get_text()
+                                    .replace("€", "")
+                                    .replace(",", ".")
+                                    .split()
+                                )
+                                if len(price) > 1:
+                                    price = price[0] + price[1]
+                                else:
+                                    price = price[0]
+                            except:
+                                price = ""
+                            try:
+                                st = (
+                                    soup.select_one(".disponibilidades")
+                                    .get_text()
+                                    .strip()
+                                )
+                                st = st.lower()
+                                # print(st)
+                                if "em stock" in st:
+                                    stock = "Disponivel"
+                                elif "poucas unidades" in st:
                                     stock = "Disponivel, mas com poucas unidades"
                                 else:
                                     stock = "Sem Stock"
@@ -853,8 +889,8 @@ class App:
                                         ) :
                                     ]
                                     preco_anterior = preco_anterior[0]
-                                    print(stock_atual + "\n" + stock_anterior)
-                                    print(preco_atual + "\n" + preco_anterior)
+                                    # print(stock_atual + "\n" + stock_anterior)
+                                    # print(preco_atual + "\n" + preco_anterior)
                                     """Ver se o estado anterior é igual ao presente em termos de preco baixo e disponibilidade"""
                                     if (
                                         (

@@ -1,0 +1,36 @@
+{
+    "python.pythonPath": "C:\\Users\\andre.rodrigues\\Anaconda3\\python.exe",
+    "terminal.integrated.shell.windows": "C:\\Windows\\System32\\cmd.exe",
+    "editor.columnSelection": true,
+    "workbench.editorAssociations": [
+        {
+            "viewType": "jupyter-notebook",
+            "filenamePattern": "*.ipynb"
+        }
+    ],
+    "workbench.colorTheme": "Monokai Pro",
+    "workbench.iconTheme": "ayu",
+    "workbench.settings.editor": "json",
+    "workbench.settings.openDefaultSettings": true,
+    "editor.fontSize": 22,
+    "editor.fontWeight": "500",
+    "editor.fontFamily": "Source Code Pro",
+    "terminal.integrated.fontFamily": "monospace",
+    "debug.console.fontFamily": "default",
+    "debug.console.fontSize": 18,
+    "terminal.integrated.fontSize": 16,
+    "terminal.integrated.fontWeight": "450",
+    "python.formatting.provider": "black",
+    "editor.formatOnSave": true,
+    //"code-runner.executorMap": {
+    //"python": "$python.pythonPath -u $fullFileName"
+    //},
+    "code-runner.clearPreviousOutput": true,
+    "code-runner.showExecutionMessage": false,
+    "git.autofetch": true,
+    "zenMode.centerLayout": false,
+    "zenMode.fullScreen": false,
+    "zenMode.hideLineNumbers": false,
+    "zenMode.hideTabs": false,
+    //"terminal.integrated.shell.windows": "C:\\Users\\andre.rodrigues\\AppData\\Local\\Programs\\Git\\bin\\bash.exe",
+}

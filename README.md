@@ -11,7 +11,8 @@ chip7;\
 chiptec;\
 globaldata;\
 gamingreplay;\
-mega-mania;
+mega-mania;\
+clickfiel;
 
 
 ## Contributing
