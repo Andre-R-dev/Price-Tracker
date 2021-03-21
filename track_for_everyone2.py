@@ -4,6 +4,7 @@ from email.mime.text import MIMEText
 from glob import glob
 from time import sleep
 import tkinter
+from tkinter import *
 from tkinter import messagebox
 import pandas as pd
 import numpy as np
@@ -66,7 +67,7 @@ class App:
     ):  # por defeito a video source seria 0; #a funcao init é sempre executada no inicio
         self.window = window  # "tkinter.Tk()"
         self.window.title(window_title)
-        self.window.geometry("500x500")
+        self.window.geometry("800x500")
         # path = os.getcwd().replace("\\", "/")
         # path = path + "/icone.png"
         # self.window.iconphoto(False, tkinter.PhotoImage(file=path
@@ -114,6 +115,12 @@ class App:
         self.btn_report.place(x=300, y=470)
 
         ###############################################
+
+        # criacao da listbox
+        self.l_box = Listbox(self.window, selectmode='BROWSE')
+        for item in self.prod_tracker.codigo:
+            self.l_box.insert('end', item)
+        self.l_box.place(x=500, y=300)
 
         """Cria as labels iniciais"""
         self.Label_Inicial()
@@ -279,6 +286,7 @@ class App:
                 or ("globaldata" in url_track_append)
                 or ("gamingreplay" in url_track_append)
                 or ("mega-mania" in url_track_append)
+                or ("clickfiel" in url_track_append)
             )
             and code_track_append != ""
             and buybellow_track_append.isnumeric
@@ -326,7 +334,6 @@ class App:
         # )  # Tem de voltar a ler o excel
         # except:
         # pass
-
         """Definir tempo programa, tempo de ciclo e email"""
         t_int = str(self.leitor_t_ciclo.get())
         if t_int.isdecimal and t_int != "":  # pode ser zero
@@ -417,7 +424,8 @@ class App:
                         ##################DIFERENTES LEITURAS DOS SITES###########################################
                         if "pcdiga" in url:
                             # product title
-                            title = soup.select(".page-title")[0].get_text().strip()
+                            title = soup.select(
+                                ".page-title")[0].get_text().strip()
                             # print(title)
                             # to prevent script from crashing when there isn't a price for the product
                             try:
@@ -449,7 +457,8 @@ class App:
                                 # print(stock)
                         elif "worten" in url:
                             title = (
-                                soup.select(".w-product__name")[0].get_text().strip()
+                                soup.select(
+                                    ".w-product__name")[0].get_text().strip()
                             )
                             # print(title)
                             # to prevent script from crashing when there isn't a price for the product
@@ -481,7 +490,8 @@ class App:
                                 # print(stock)
                         elif "amazon" in url:
                             # product title
-                            title = soup.find(id="productTitle").get_text().strip()
+                            title = soup.find(
+                                id="productTitle").get_text().strip()
 
                             # to prevent script from crashing when there isn't a price for the product
                             try:
@@ -532,7 +542,8 @@ class App:
                                         .replace(",", ".")
                                     )
                                     review_count = int(
-                                        soup.select("#acrCustomerReviewText")[0]
+                                        soup.select(
+                                            "#acrCustomerReviewText")[0]
                                         .get_text()
                                         .split(" ")[0]
                                         .replace(".", "")
@@ -566,7 +577,8 @@ class App:
                             # print(title)
 
                             try:
-                                price = soup.select(".bigprices")[0].get_text().split()
+                                price = soup.select(".bigprices")[
+                                    0].get_text().split()
                                 if len(price) > 1:
                                     price = price[0] + price[1]
                                 else:
@@ -577,7 +589,8 @@ class App:
                                 # print(price)
                             try:
                                 if (
-                                    soup.find(id="AddToCartText").get_text().strip()
+                                    soup.find(
+                                        id="AddToCartText").get_text().strip()
                                     == "Comprar"
                                 ):
                                     stock = "Disponivel"
@@ -590,7 +603,8 @@ class App:
                                 print(stock)
                         elif "chip7" in url:
                             title = (
-                                soup.select(".product-title h1")[0].get_text().strip()
+                                soup.select(
+                                    ".product-title h1")[0].get_text().strip()
                             )
                             # print(title)
 
@@ -627,7 +641,8 @@ class App:
                                 stock = "ERRO NO STOCK"
                                 print(stock)
                         elif "chiptec" in url:
-                            title = soup.select(".prod_tit")[0].get_text().strip()
+                            title = soup.select(".prod_tit")[
+                                0].get_text().strip()
                             # print(title)
 
                             try:
@@ -648,13 +663,15 @@ class App:
                                 # print(price)
                             try:
                                 if (
-                                    soup.select(".availability")[0].get_text().strip()
+                                    soup.select(".availability")[
+                                        0].get_text().strip()
                                     == "Disponibilidade: Disponível"
                                 ):
                                     stock = "Disponivel"
                                     # print(stock)
                                 elif (
-                                    soup.select(".availability")[0].get_text().strip()
+                                    soup.select(".availability")[
+                                        0].get_text().strip()
                                     == "Disponibilidade: Por Encomenda"
                                 ):
                                     stock = "Por Encomenda"
@@ -730,7 +747,8 @@ class App:
 
                             try:
                                 st = (
-                                    soup.select("p.store_stock_feature.in_stock")[0]
+                                    soup.select(
+                                        "p.store_stock_feature.in_stock")[0]
                                     .get_text()
                                     .strip()
                                 )
@@ -753,7 +771,8 @@ class App:
 
                             try:
                                 price = (
-                                    soup.select(".produto_lista_botoes__bt_preco")[0]
+                                    soup.select(
+                                        ".produto_lista_botoes__bt_preco")[0]
                                     .get_text()
                                     .replace("€", "")
                                     .replace(",", ".")
@@ -767,7 +786,8 @@ class App:
                                 price = ""
                             try:
                                 st = (
-                                    soup.select(".produto_lista_stock_emstock")[0]
+                                    soup.select(
+                                        ".produto_lista_stock_emstock")[0]
                                     .get_text()
                                     .strip()
                                 )
@@ -876,7 +896,7 @@ class App:
                                             - (
                                                 len(prod_tracker.url)
                                             )  # 1 devido ao indice começar em 0
-                                        ) :
+                                        ):
                                     ]
                                     stock_anterior = stock_anterior[0]
                                     preco_atual = log.price.array[0]
@@ -886,7 +906,7 @@ class App:
                                             - (
                                                 len(prod_tracker.url)
                                             )  # 1 devido ao indice começar em 0
-                                        ) :
+                                        ):
                                     ]
                                     preco_anterior = preco_anterior[0]
                                     # print(stock_atual + "\n" + stock_anterior)
@@ -928,7 +948,8 @@ class App:
                                 "Informação", "Erro na aquisição de dados"
                             )
 
-                        self.search_tracker_log = self.search_tracker_log.append(log)
+                        self.search_tracker_log = self.search_tracker_log.append(
+                            log)
                         # print('appended '+ prod_tracker.code[count] +'\n' + title + '\n' + stock + '\n\n')
                         print(
                             title
@@ -1012,4 +1033,3 @@ class App:
 
 # Create a window and pass it to the Application object
 App(tkinter.Tk(), "Tracking", prod_tracker, search_tracker_log, tracker_log)
-#
