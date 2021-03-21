@@ -362,9 +362,9 @@ class App:
             )
         l_mail = str(self.leitor_mail.get())
         if l_mail != "" and (
-            ("@hotmail" in l_mail)
+            ("@hotmail.com" in l_mail)
             or ("@gmail.com" in l_mail)
-            or ("@outlook" in l_mail)
+            or ("@outlook.com" in l_mail)
             or ("@adral.pt" in l_mail)
             or ("@ua.pt" in l_mail)
         ):
@@ -373,10 +373,6 @@ class App:
             messagebox.showinfo(
                 "Informação", "Insira um email válido",
             )
-
-        self.lista_mail = [
-            "andresrodrigues@ua.pt",
-        ]  # ATENCAOOOO####################
 
         print(n_ciclos)
         print(t_entre_ciclos)
@@ -996,9 +992,6 @@ class App:
         server.starttls()
 
         sender = email
-        # targets = ["andre.rodrigues@adral.pt","andresrodrigues@ua.pt"]
-
-        # server = smtplib.SMTP_SSL('host', port)
         server.ehlo()
         server.login(email, password)
         sleep(5)
