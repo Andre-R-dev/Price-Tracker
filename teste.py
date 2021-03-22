@@ -47,17 +47,20 @@ def search_product_list(interval_count=1, interval_hours=1):
     while interval < interval_count:
 
         for x, url in enumerate(prod_tracker_URLS):
+
             page = requests.get(url, headers=HEADERS)
+            sleep(10)
+            # page = requests.get(url, headers=HEADERS)
             soup = BeautifulSoup(
                 page.content, features="lxml"
             )  # cria um objeto que contem a info da url mas de forma organizada != do page
-            # print(soup)
-            title = soup.select("h1")[0].get_text().strip()
+            print(soup)
+            title = soup.find(name="title").get_text().strip()
             print(title)
 
             try:
                 price = (
-                    soup.select(".price.new .whole")[0]
+                    soup.select(".h1")[0]
                     .get_text()
                     .replace("€", "")
                     .replace(",", ".")
@@ -67,24 +70,25 @@ def search_product_list(interval_count=1, interval_hours=1):
                     price = price[0] + price[1]
                 else:
                     price = price[0]
-                print(price)
+                # print(price)
             except:
                 price = ""
-                print(price)
+                # print(price)
 
             try:
-                st = soup.select_one(".disponibilidades").get_text().strip()
+                # print(soup.select('.availability-text')[0].get_text().strip())
+                st = soup.select(".availability-text")[0].get_text().strip()
                 st = st.lower()
                 # print(st)
                 if "em stock" in st:
                     stock = "Disponivel"
-                    print(stock)
+                    # print(stock)
                 elif "poucas unidades" in st:
                     stock = "Disponivel, mas com poucas unidades"
-                    print(stock)
+                    # print(stock)
                 else:
                     stock = "Sem Stock"
-                    print(stock)
+                    # print(stock)
             except:
                 stock = "ERRO NO STOCK"
                 print(stock)
