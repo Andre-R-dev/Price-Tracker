@@ -1,7 +1,7 @@
 TRACKER_TEST.csv
 TRACKER_TEST2.csv
-TRACKER_TEST2.xlsx
-teste.py
+#TRACKER_TEST2.xlsx
+#teste.py
 teste_soft.py
 README.md
 .vscode
@@ -18,3 +18,4 @@ search_history
 TRACKER_TEST2ba.xlsx
 trackers
 Antigo
+output
