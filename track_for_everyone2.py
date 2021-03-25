@@ -90,7 +90,7 @@ class App:
             height=1,
             command=self.close_window,
         )
-        self.btn_close.place(x=385, y=0)
+        self.btn_close.place(x=685, y=0)
 
         """Botão que adiciona um link ao excel do track"""
         self.btn_append_track = tkinter.Button(
@@ -100,7 +100,7 @@ class App:
             height=1,
             command=self.Append_Excel,
         )
-        self.btn_append_track.place(x=190, y=90)
+        self.btn_append_track.place(x=180, y=90)
 
         """Botão que corre o programa"""
         self.btn_append_track = tkinter.Button(
@@ -112,15 +112,15 @@ class App:
         self.btn_report = tkinter.Button(
             window, text="Reporta o problema", width=20, height=1, command=self.Report,
         )
-        self.btn_report.place(x=300, y=470)
+        self.btn_report.place(x=600, y=470)
 
         ###############################################
 
         # criacao da listbox
-        self.l_box = Listbox(self.window, selectmode="BROWSE")
+        self.l_box = Listbox(self.window, selectmode="BROWSE", width=25)
         for item in self.prod_tracker.codigo:
             self.l_box.insert("end", item)
-        self.l_box.place(x=500, y=300)
+        self.l_box.place(x=385, y=0)
 
         """Cria as labels iniciais"""
         self.Label_Inicial()
@@ -242,26 +242,66 @@ class App:
             borderwidth=2,
             relief="groove",
         )
-        self.leitor_report_text.place(x=300, y=380)
+        self.leitor_report_text.place(x=600, y=410)
 
         self.leitor_report = tkinter.Entry(self.window, width="30",)
-        self.leitor_report.place(x=300, y=410)
+        self.leitor_report.place(x=600, y=440)
 
         """Tempo mínimo para correr um ciclo"""
         self.t_minimo_text = tkinter.Label(
             self.window,
-            text="Tempo mínimo para correr um ciclo completo de pesquisa"
+            text="Tempo mínimo para correr" + "\n"
+            "um ciclo completo de pesquisa"
             + "\n"
             + str(int(self.t_entre_url * len(self.prod_tracker.url)))
             + " segundos",
             fg="black",
             font=("Arial", 8),
+            width=30,
+        )
+        self.t_minimo_text.place(x=620, y=270)
+
+        """Lojas permitidas"""
+        lojas_permitidas_text = tkinter.Label(
+            self.window,
+            text="Lojas disponiveis:"
+            + "\n"
+            + "\n"
+            + "PCDiga"
+            + "\n"
+            + "Worten"
+            + "\n"
+            + "Amazon"
+            + "\n"
+            + "Mediamarkt"
+            + "\n"
+            + "Chip7"
+            + "\n"
+            + "Globaldata"
+            + "\n"
+            + "Gamingreplay"
+            + "\n"
+            + "Mega-mania"
+            + "\n"
+            + "Clickfiel",
+            fg="black",
+            font=("Arial", 10),
+            width=15,
+        )
+        lojas_permitidas_text.place(x=650, y=80)
+
+        """Texto Informações"""
+        informacoes_text = tkinter.Label(
+            self.window,
+            text="Informações",
+            fg="black",
+            font=("Arial", 10),
             bg="white",
-            width=50,
+            width=15,
             borderwidth=2,
             relief="groove",
         )
-        self.t_minimo_text.place(x=180, y=190)
+        informacoes_text.place(x=650, y=50)
 
     """Funcao para adicionar novas urls ao excel tracker"""
 
