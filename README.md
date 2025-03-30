@@ -1,4 +1,4 @@
-# Track_Prices
+# Price_Tracker
 
 On the begining it will created one folder with the name search_history, where it will be load the new excel files from the search. One excel file with name tracker where it will be the information for the application search. You can delete and add information to your tracker file for now, but in further updates the objective is that you do all by the app. For now it's only possible to add objects to the tracker file on the app.
 
